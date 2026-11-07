@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'features/authentication/presentation/pages/authentication_page.dart';
 import 'features/dashboard/presentation/pages/dashboard_page.dart';
 import 'features/profile/presentation/pages/profile_page.dart';
+import 'features/reports/presentation/pages/statistics_page.dart';
 import 'features/settings/presentation/pages/system_settings_page.dart';
 
 void main() {
@@ -26,6 +27,7 @@ class SimproApp extends StatelessWidget {
       routes: {
         AuthenticationPage.routeName: (_) => const AuthenticationPage(),
         DashboardPage.routeName: (_) => const DashboardPage(),
+        StatisticsPage.routeName: (_) => const StatisticsPage(),
         ProfilePage.routeName: (_) => const ProfilePage(),
         SystemSettingsPage.routeName: (_) => const SystemSettingsPage(),
       },
