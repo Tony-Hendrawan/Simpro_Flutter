@@ -1,0 +1,17 @@
+class UserAccountEntity {
+  final int id;
+  final String name;
+  final String username;
+  final String role; // 'owner', 'admin', 'administrasi', 'konsultan', 'pengawas', 'logistik', 'marketing', 'keuangan'
+  final String email;
+  final String status; // 'aktif', 'nonaktif'
+
+  const UserAccountEntity({
+    required this.id,
+    required this.name,
+    required this.username,
+    required this.role,
+    required this.email,
+    required this.status,
+  });
+}

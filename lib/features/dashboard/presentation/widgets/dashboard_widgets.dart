@@ -1,5 +1,17 @@
 import 'package:flutter/material.dart';
+import '../../../clients/presentation/pages/clients_page.dart';
+import '../../../documents/presentation/pages/documents_page.dart';
+import '../../../equipments/presentation/pages/equipments_page.dart';
+import '../../../finance/presentation/pages/finance_page.dart';
+import '../../../material_requests/presentation/pages/material_requests_page.dart';
+import '../../../materials/presentation/pages/materials_page.dart';
+import '../../../progress/presentation/pages/progress_report_page.dart';
+import '../../../projects/presentation/pages/projects_page.dart';
+import '../../../reports/presentation/pages/reports_export_page.dart';
 import '../../../settings/presentation/pages/system_settings_page.dart';
+import '../../../surveys/presentation/pages/survey_approvals_page.dart';
+import '../../../surveys/presentation/pages/surveys_page.dart';
+import '../../../users/presentation/pages/users_management_page.dart';
 
 // ── Menu Grid (ikon + label, 4 kolom, langsung di beranda) ──
 // Item dan jumlahnya sama persis dengan slide drawer (14 item).
@@ -57,12 +69,56 @@ class _DashboardQuickActionsState extends State<DashboardQuickActions> {
       setState(() => _showAll = false);
       return;
     }
-    if (item.title == 'Pengaturan Sistem') {
-      Navigator.pushNamed(context, SystemSettingsPage.routeName);
+    if (item.title == 'Klien & Vendor') {
+      Navigator.pushNamed(context, ClientsPage.routeName);
+      return;
+    }
+    if (item.title == 'Survei Lokasi') {
+      Navigator.pushNamed(context, SurveysPage.routeName);
+      return;
+    }
+    if (item.title == 'Validasi Survei') {
+      Navigator.pushNamed(context, SurveyApprovalsPage.routeName);
+      return;
+    }
+    if (item.title == 'Daftar Proyek') {
+      Navigator.pushNamed(context, ProjectsPage.routeName);
+      return;
+    }
+    if (item.title == 'Laporan Pengerjaan Proyek') {
+      Navigator.pushNamed(context, ProgressReportPage.routeName);
+      return;
+    }
+    if (item.title == 'Logistik & Material') {
+      Navigator.pushNamed(context, MaterialsPage.routeName);
+      return;
+    }
+    if (item.title == 'Pengajuan Material') {
+      Navigator.pushNamed(context, MaterialRequestsPage.routeName);
+      return;
+    }
+    if (item.title == 'Alat Berat & Aset') {
+      Navigator.pushNamed(context, EquipmentsPage.routeName);
+      return;
+    }
+    if (item.title == 'Keuangan Proyek') {
+      Navigator.pushNamed(context, FinancePage.routeName);
+      return;
+    }
+    if (item.title == 'Dokumen Proyek') {
+      Navigator.pushNamed(context, DocumentsPage.routeName);
       return;
     }
     if (item.title == 'Generate Laporan') {
-      widget.onSelectTab?.call(1); // Tab Statistik
+      Navigator.pushNamed(context, ReportsExportPage.routeName);
+      return;
+    }
+    if (item.title == 'Kelola User') {
+      Navigator.pushNamed(context, UsersManagementPage.routeName);
+      return;
+    }
+    if (item.title == 'Pengaturan Sistem') {
+      Navigator.pushNamed(context, SystemSettingsPage.routeName);
       return;
     }
 
