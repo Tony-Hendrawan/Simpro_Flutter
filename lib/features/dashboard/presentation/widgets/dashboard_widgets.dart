@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/access_control.dart';
 import '../../../clients/presentation/pages/clients_page.dart';
 import '../../../documents/presentation/pages/documents_page.dart';
 import '../../../equipments/presentation/pages/equipments_page.dart';
@@ -19,8 +20,9 @@ import '../../../users/presentation/pages/users_management_page.dart';
 // yang saat ditekan menampilkan semua menu + tombol "Sembunyikan".
 class DashboardQuickActions extends StatefulWidget {
   final ValueChanged<int>? onSelectTab;
+  final String? role;
 
-  const DashboardQuickActions({super.key, this.onSelectTab});
+  const DashboardQuickActions({super.key, this.onSelectTab, this.role});
 
   @override
   State<DashboardQuickActions> createState() => _DashboardQuickActionsState();
@@ -30,32 +32,34 @@ class _DashboardQuickActionsState extends State<DashboardQuickActions> {
   bool _showAll = false;
 
   static const List<_MenuItem> _allItems = [
-    _MenuItem(title: 'Klien & Vendor', icon: Icons.people_alt_outlined),
-    _MenuItem(title: 'Survei Lokasi', icon: Icons.pin_drop_outlined),
-    _MenuItem(title: 'Validasi Survei', icon: Icons.fact_check_outlined),
-    _MenuItem(title: 'Daftar Proyek', icon: Icons.format_list_bulleted_rounded),
-    _MenuItem(title: 'Laporan Pengerjaan Proyek', icon: Icons.description_outlined),
-    _MenuItem(title: 'Logistik & Material', icon: Icons.inventory_2_outlined),
-    _MenuItem(title: 'Pengajuan Material', icon: Icons.shopping_bag_outlined),
-    _MenuItem(title: 'Alat Berat & Aset', icon: Icons.local_shipping_outlined),
-    _MenuItem(title: 'Keuangan Proyek', icon: Icons.account_balance_wallet_outlined),
-    _MenuItem(title: 'Dokumen Proyek', icon: Icons.folder_outlined),
-    _MenuItem(title: 'Generate Laporan', icon: Icons.print_outlined),
-    _MenuItem(title: 'Kelola User', icon: Icons.manage_accounts_outlined),
-    _MenuItem(title: 'Pengaturan Sistem', icon: Icons.settings_outlined),
+    _MenuItem(title: 'Klien & Vendor', icon: Icons.people_alt_outlined, permission: AppPermissions.clientsView),
+    _MenuItem(title: 'Survei Lokasi', icon: Icons.pin_drop_outlined, permission: AppPermissions.siteSurveysView),
+    _MenuItem(title: 'Validasi Survei', icon: Icons.fact_check_outlined, permission: AppPermissions.siteSurveysApprove),
+    _MenuItem(title: 'Daftar Proyek', icon: Icons.format_list_bulleted_rounded, permission: AppPermissions.projectsView),
+    _MenuItem(title: 'Laporan Pengerjaan Proyek', icon: Icons.description_outlined, permission: AppPermissions.progressView),
+    _MenuItem(title: 'Logistik & Material', icon: Icons.inventory_2_outlined, permission: AppPermissions.materialsView),
+    _MenuItem(title: 'Pengajuan Material', icon: Icons.shopping_bag_outlined, permission: AppPermissions.materialRequestsView),
+    _MenuItem(title: 'Alat Berat & Aset', icon: Icons.local_shipping_outlined, permission: AppPermissions.equipmentsView),
+    _MenuItem(title: 'Keuangan Proyek', icon: Icons.account_balance_wallet_outlined, permission: AppPermissions.financeView),
+    _MenuItem(title: 'Dokumen Proyek', icon: Icons.folder_outlined, permission: AppPermissions.documentsView),
+    _MenuItem(title: 'Generate Laporan', icon: Icons.print_outlined, permission: AppPermissions.reportsExport),
+    _MenuItem(title: 'Kelola User', icon: Icons.manage_accounts_outlined, permission: AppPermissions.usersView),
+    _MenuItem(title: 'Pengaturan Sistem', icon: Icons.settings_outlined, permission: AppPermissions.settingsView),
   ];
 
   List<_MenuItem> get _visibleItems {
+    final permittedItems = _allItems
+        .where((item) => AccessControl.can(widget.role, item.permission))
+        .toList();
     if (_showAll) {
-      // 14 item drawer + 1 tombol "Sembunyikan" di posisi terakhir
       return [
-        ..._allItems,
+        ...permittedItems,
         const _MenuItem(title: 'Sembunyikan', icon: Icons.expand_less_rounded),
       ];
     }
-    // 7 item pertama + 1 tombol "Tampilkan Semua"
+    final initialItems = permittedItems.take(7).toList();
     return [
-      ..._allItems.sublist(0, 7),
+      ...initialItems,
       const _MenuItem(title: 'Tampilkan Semua', icon: Icons.expand_more_rounded),
     ];
   }
@@ -201,7 +205,12 @@ class _DashboardQuickActionsState extends State<DashboardQuickActions> {
 class _MenuItem {
   final String title;
   final IconData icon;
-  const _MenuItem({required this.title, required this.icon});
+  final String permission;
+  const _MenuItem({
+    required this.title,
+    required this.icon,
+    this.permission = AppPermissions.dashboardView,
+  });
 }
 
 // ── Metrics Summary Grid ──
@@ -225,12 +234,12 @@ class DashboardMetricsGrid extends StatelessWidget {
         crossAxisCount: 2,
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
-        childAspectRatio: 1.6,
+        childAspectRatio: 1.32,
       ),
       itemBuilder: (context, index) {
         final item = metrics[index];
         return Container(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
@@ -250,14 +259,17 @@ class DashboardMetricsGrid extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 6),
-              Text(
-                item.value,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: item.isCur ? 14 : 22,
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF0F172A),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  item.value,
+                  maxLines: 1,
+                  style: TextStyle(
+                    fontSize: item.isCur ? 14 : 22,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF0F172A),
+                  ),
                 ),
               ),
             ],

@@ -294,18 +294,27 @@ class _EquipmentsPageState extends State<EquipmentsPage> {
                         const SizedBox(height: 8),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text(
-                              e.projectName != null ? 'Lokasi: ${e.projectName}' : 'Lokasi: Pool / Gudang Pusat',
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: e.projectName != null ? const Color(0xFF1E293B) : const Color(0xFF94A3B8),
+                            Flexible(
+                              child: Text(
+                                e.projectName != null ? 'Lokasi: ${e.projectName}' : 'Lokasi: Pool / Gudang Pusat',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: e.projectName != null ? const Color(0xFF1E293B) : const Color(0xFF94A3B8),
+                                ),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
+                            const SizedBox(width: 8),
                             Text(
-                              '${_formatRp(e.dailyCost)} / hr',
-                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF1D4ED8)),
+                              e.dailyCost > 0 ? '${_formatRp(e.dailyCost)} / hari' : 'Milik Sendiri',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: e.dailyCost > 0 ? const Color(0xFF1D4ED8) : const Color(0xFF64748B),
+                              ),
                             ),
                           ],
                         ),

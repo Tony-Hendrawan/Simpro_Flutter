@@ -8,6 +8,11 @@ class MaterialModel extends MaterialEntity {
     required super.minimumStock,
     required super.pricePerUnit,
     required super.unit,
+    super.specification,
+    super.supplier,
+    super.rentalPricePerUnit,
+    super.discountPercent,
+    super.discountAmount,
   });
 
   static List<MaterialModel> get mockMaterials => const [
@@ -18,6 +23,9 @@ class MaterialModel extends MaterialEntity {
       minimumStock: 100,
       pricePerUnit: 68000,
       unit: 'Sak',
+      specification: 'SNI 2049:2015 Tipe PCC',
+      supplier: 'PT Semen Indonesia Group',
+      discountPercent: 10,
     ),
     MaterialModel(
       id: 2,
@@ -26,6 +34,8 @@ class MaterialModel extends MaterialEntity {
       minimumStock: 200,
       pricePerUnit: 115000,
       unit: 'Batang',
+      specification: 'BJTS 420B SNI 2052:2017',
+      supplier: 'PT Krakatau Steel Tbk',
     ),
     MaterialModel(
       id: 3,
@@ -34,6 +44,9 @@ class MaterialModel extends MaterialEntity {
       minimumStock: 150,
       pricePerUnit: 78000,
       unit: 'Batang',
+      specification: 'BJTP 280 SNI Standar',
+      supplier: 'PT Krakatau Steel Tbk',
+      discountPercent: 5,
     ),
     MaterialModel(
       id: 4,
@@ -42,6 +55,8 @@ class MaterialModel extends MaterialEntity {
       minimumStock: 15,
       pricePerUnit: 280000,
       unit: 'M3',
+      specification: 'Gradasi 0-4mm Bebas Lumpur',
+      supplier: 'CV Mitra Pasir Mandiri',
     ),
     MaterialModel(
       id: 5,
@@ -50,6 +65,8 @@ class MaterialModel extends MaterialEntity {
       minimumStock: 10,
       pricePerUnit: 295000,
       unit: 'M3',
+      specification: 'Ukuran 20-30mm Abu Batu Rendah',
+      supplier: 'PT Quary Granit Cilegon',
     ),
     MaterialModel(
       id: 6,
@@ -58,6 +75,9 @@ class MaterialModel extends MaterialEntity {
       minimumStock: 40,
       pricePerUnit: 620000,
       unit: 'M3',
+      specification: 'Kerapatan 550kg/m3 Kuat Tekan 4N/mm2',
+      supplier: 'PT Powerblock Indonesia',
+      discountAmount: 20000,
     ),
     MaterialModel(
       id: 7,
@@ -66,6 +86,9 @@ class MaterialModel extends MaterialEntity {
       minimumStock: 100,
       pricePerUnit: 85000,
       unit: 'Batang',
+      specification: 'G550 AZ100 Ketebalan 0.75mm',
+      supplier: 'PT Sunrise Steel',
+      rentalPricePerUnit: 15000,
     ),
     MaterialModel(
       id: 8,
@@ -74,6 +97,8 @@ class MaterialModel extends MaterialEntity {
       minimumStock: 15,
       pricePerUnit: 1450000,
       unit: 'Galon',
+      specification: 'Weathershield Anti-UV & Jamur',
+      supplier: 'PT AkzoNobel Deco Indonesia',
     ),
     MaterialModel(
       id: 9,
@@ -82,6 +107,8 @@ class MaterialModel extends MaterialEntity {
       minimumStock: 25,
       pricePerUnit: 135000,
       unit: 'Batang',
+      specification: 'Kelas AW Tekanan Kerja 10kg/cm2',
+      supplier: 'PT Wavin Rucika Duta',
     ),
   ];
 }

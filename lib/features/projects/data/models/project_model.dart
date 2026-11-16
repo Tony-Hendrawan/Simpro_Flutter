@@ -13,6 +13,7 @@ class ProjectModel extends ProjectEntity {
     required super.progress,
     required super.status,
     required super.manager,
+    super.completedDocsCount,
   });
 
   static List<ProjectModel> get mockProjects => const [
@@ -28,6 +29,7 @@ class ProjectModel extends ProjectEntity {
       progress: 45.0,
       status: 'aktif',
       manager: 'Andi Wijaya, ST',
+      completedDocsCount: 5,
     ),
     ProjectModel(
       id: 2,
@@ -41,6 +43,7 @@ class ProjectModel extends ProjectEntity {
       progress: 68.0,
       status: 'aktif',
       manager: 'Ir. Budi Santoso',
+      completedDocsCount: 4,
     ),
     ProjectModel(
       id: 3,
@@ -54,6 +57,7 @@ class ProjectModel extends ProjectEntity {
       progress: 32.0,
       status: 'aktif',
       manager: 'Andi Wijaya, ST',
+      completedDocsCount: 4,
     ),
     ProjectModel(
       id: 4,
@@ -67,6 +71,7 @@ class ProjectModel extends ProjectEntity {
       progress: 55.0,
       status: 'aktif',
       manager: 'Andi Wijaya, ST',
+      completedDocsCount: 5,
     ),
     ProjectModel(
       id: 5,
@@ -80,6 +85,7 @@ class ProjectModel extends ProjectEntity {
       progress: 100.0,
       status: 'selesai',
       manager: 'Ir. Budi Santoso',
+      completedDocsCount: 5,
     ),
     ProjectModel(
       id: 6,
@@ -93,6 +99,7 @@ class ProjectModel extends ProjectEntity {
       progress: 5.0,
       status: 'perencanaan',
       manager: 'Ir. Budi Santoso',
+      completedDocsCount: 3,
     ),
     ProjectModel(
       id: 7,
@@ -106,6 +113,21 @@ class ProjectModel extends ProjectEntity {
       progress: 72.0,
       status: 'aktif',
       manager: 'Andi Wijaya, ST',
+      completedDocsCount: 4,
+    ),
+    ProjectModel(
+      id: 8,
+      code: 'P008',
+      name: 'Pekerjaan Saluran Drainase Kawasan',
+      location: 'Cikarang',
+      clientName: 'Kawasan Industri Jababeka',
+      contractValue: 6000000000,
+      budget: 5200000000,
+      spent: 120000000,
+      progress: 2.0,
+      status: 'tertunda',
+      manager: 'Andi Wijaya, ST',
+      completedDocsCount: 2,
     ),
   ];
 }

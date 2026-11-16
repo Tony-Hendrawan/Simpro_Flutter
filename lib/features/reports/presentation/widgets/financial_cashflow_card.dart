@@ -167,19 +167,21 @@ class _FinancialCashflowCardState extends State<FinancialCashflowCard> {
           // Legend
           Padding(
             padding: const EdgeInsets.only(top: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: _activeTab == 0
-                  ? [
-                      _buildLegendItem(const Color(0xFF1D4ED8), 'Anggaran (RAB)'),
-                      const SizedBox(width: 16),
-                      _buildLegendItem(const Color(0xFF10B981), 'Realisasi Biaya'),
-                    ]
-                  : [
-                      _buildLegendItem(const Color(0xFF10B981), 'Pemasukan'),
-                      const SizedBox(width: 16),
-                      _buildLegendItem(const Color(0xFFE11D48), 'Pengeluaran'),
-                    ],
+            child: Center(
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 16,
+                runSpacing: 8,
+                children: _activeTab == 0
+                    ? [
+                        _buildLegendItem(const Color(0xFF1D4ED8), 'Anggaran (RAB)'),
+                        _buildLegendItem(const Color(0xFF10B981), 'Realisasi Biaya'),
+                      ]
+                    : [
+                        _buildLegendItem(const Color(0xFF10B981), 'Pemasukan'),
+                        _buildLegendItem(const Color(0xFFE11D48), 'Pengeluaran'),
+                      ],
+              ),
             ),
           ),
         ],

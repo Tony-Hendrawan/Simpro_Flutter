@@ -4,9 +4,14 @@ class SurveyEntity {
   final String projectName;
   final String surveyorName;
   final String surveyDate;
-  final String landCondition; // 'Datar', 'Bergelombang', 'Curam'
+  final String landCondition; // 'Datar', 'Bergelombang', 'Miring/Berbukit'
   final String status; // 'pending', 'review', 'approved', 'rejected'
   final String notes;
+  final double? areaSize; // Satuan: Hektar (Ha)
+  final double? elevation; // Satuan: mdpl
+  final String? soilType; // Jenis Tanah: Tanah Lempung/Liat, Tanah Keras/Padas, dll.
+  final String? contour; // Kontur: Datar, Bergelombang, Miring/Berbukit
+  final String? accessibility; // Akses Jalan Menuju Lokasi
 
   const SurveyEntity({
     required this.id,
@@ -17,5 +22,10 @@ class SurveyEntity {
     required this.landCondition,
     required this.status,
     required this.notes,
+    this.areaSize,
+    this.elevation,
+    this.soilType,
+    this.contour,
+    this.accessibility,
   });
 }

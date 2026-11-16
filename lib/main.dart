@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'features/authentication/presentation/pages/authentication_page.dart';
+import 'core/access_control.dart';
 import 'features/clients/presentation/pages/clients_page.dart';
 import 'features/dashboard/presentation/pages/dashboard_page.dart';
 import 'features/documents/presentation/pages/documents_page.dart';
@@ -38,22 +39,67 @@ class SimproApp extends StatelessWidget {
       initialRoute: AuthenticationPage.routeName,
       routes: {
         AuthenticationPage.routeName: (_) => const AuthenticationPage(),
-        DashboardPage.routeName: (_) => const DashboardPage(),
-        StatisticsPage.routeName: (_) => const StatisticsPage(),
+        DashboardPage.routeName: (_) => const PermissionGuard(
+          permission: AppPermissions.dashboardView,
+          child: DashboardPage(),
+        ),
+        StatisticsPage.routeName: (_) => const PermissionGuard(
+          permission: AppPermissions.reportsView,
+          child: StatisticsPage(),
+        ),
         ProfilePage.routeName: (_) => const ProfilePage(),
-        SystemSettingsPage.routeName: (_) => const SystemSettingsPage(),
-        ClientsPage.routeName: (_) => const ClientsPage(),
-        SurveysPage.routeName: (_) => const SurveysPage(),
-        SurveyApprovalsPage.routeName: (_) => const SurveyApprovalsPage(),
-        ProjectsPage.routeName: (_) => const ProjectsPage(),
-        ProgressReportPage.routeName: (_) => const ProgressReportPage(),
-        MaterialsPage.routeName: (_) => const MaterialsPage(),
-        MaterialRequestsPage.routeName: (_) => const MaterialRequestsPage(),
-        EquipmentsPage.routeName: (_) => const EquipmentsPage(),
-        FinancePage.routeName: (_) => const FinancePage(),
-        DocumentsPage.routeName: (_) => const DocumentsPage(),
-        ReportsExportPage.routeName: (_) => const ReportsExportPage(),
-        UsersManagementPage.routeName: (_) => const UsersManagementPage(),
+        SystemSettingsPage.routeName: (_) => const PermissionGuard(
+          permission: AppPermissions.settingsView,
+          child: SystemSettingsPage(),
+        ),
+        ClientsPage.routeName: (_) => const PermissionGuard(
+          permission: AppPermissions.clientsView,
+          child: ClientsPage(),
+        ),
+        SurveysPage.routeName: (_) => const PermissionGuard(
+          permission: AppPermissions.siteSurveysView,
+          child: SurveysPage(),
+        ),
+        SurveyApprovalsPage.routeName: (_) => const PermissionGuard(
+          permission: AppPermissions.siteSurveysApprove,
+          child: SurveyApprovalsPage(),
+        ),
+        ProjectsPage.routeName: (_) => const PermissionGuard(
+          permission: AppPermissions.projectsView,
+          child: ProjectsPage(),
+        ),
+        ProgressReportPage.routeName: (_) => const PermissionGuard(
+          permission: AppPermissions.progressView,
+          child: ProgressReportPage(),
+        ),
+        MaterialsPage.routeName: (_) => const PermissionGuard(
+          permission: AppPermissions.materialsView,
+          child: MaterialsPage(),
+        ),
+        MaterialRequestsPage.routeName: (_) => const PermissionGuard(
+          permission: AppPermissions.materialRequestsView,
+          child: MaterialRequestsPage(),
+        ),
+        EquipmentsPage.routeName: (_) => const PermissionGuard(
+          permission: AppPermissions.equipmentsView,
+          child: EquipmentsPage(),
+        ),
+        FinancePage.routeName: (_) => const PermissionGuard(
+          permission: AppPermissions.financeView,
+          child: FinancePage(),
+        ),
+        DocumentsPage.routeName: (_) => const PermissionGuard(
+          permission: AppPermissions.documentsView,
+          child: DocumentsPage(),
+        ),
+        ReportsExportPage.routeName: (_) => const PermissionGuard(
+          permission: AppPermissions.reportsExport,
+          child: ReportsExportPage(),
+        ),
+        UsersManagementPage.routeName: (_) => const PermissionGuard(
+          permission: AppPermissions.usersView,
+          child: UsersManagementPage(),
+        ),
       },
     );
   }

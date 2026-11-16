@@ -3,8 +3,52 @@ import 'authentication_local_data_source.dart';
 
 class AuthenticationLocalDataSourceImpl
     implements AuthenticationLocalDataSource {
-  static const String _mockUsername = 'admin';
-  static const String _mockPassword = 'admin';
+  static const String _mockPassword = 'password';
+
+  static const _mockUsers = {
+    'owner': (
+      id: 1,
+      name: 'Ir. H. Hendra Wijaya',
+      email: 'owner@arthamasgraha.com',
+      role: 'owner',
+    ),
+    'admin': (
+      id: 2,
+      name: 'Admin Sistem',
+      email: 'admin@arthamasgraha.com',
+      role: 'admin',
+    ),
+    'administrasi': (
+      id: 3,
+      name: 'Siti Rahmawati, S.E.',
+      email: 'admin.operasional@arthamasgraha.com',
+      role: 'administrasi',
+    ),
+    'konsultan': (
+      id: 4,
+      name: 'Ir. Budi Santoso',
+      email: 'konsultan.teknik@arthamasgraha.com',
+      role: 'konsultan',
+    ),
+    'pengawas': (
+      id: 5,
+      name: 'Andi Wijaya, ST',
+      email: 'pengawas.lapangan@arthamasgraha.com',
+      role: 'pengawas',
+    ),
+    'logistik': (
+      id: 6,
+      name: 'Agus Setiawan',
+      email: 'gudang.logistik@arthamasgraha.com',
+      role: 'logistik',
+    ),
+    'keuangan': (
+      id: 7,
+      name: 'Ratna Sari, SE',
+      email: 'finance@arthamasgraha.com',
+      role: 'keuangan',
+    ),
+  };
 
   const AuthenticationLocalDataSourceImpl();
 
@@ -16,14 +60,15 @@ class AuthenticationLocalDataSourceImpl
     // Simulasi jaringan agar terasa asli saat development
     await Future.delayed(const Duration(milliseconds: 600));
 
-    if (username == _mockUsername && password == _mockPassword) {
-      return const AuthenticationModel(
-        id: 1,
-        name: 'Administrator',
-        username: 'admin',
-        email: 'admin@simpro.local',
-        role: 'admin',
-        token: 'mock_token_admin_001',
+    final user = _mockUsers[username.toLowerCase()];
+    if (user != null && password == _mockPassword) {
+      return AuthenticationModel(
+        id: user.id,
+        name: user.name,
+        username: username.toLowerCase(),
+        email: user.email,
+        role: user.role,
+        token: 'mock_token_${user.role}',
       );
     }
 

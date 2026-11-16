@@ -14,10 +14,12 @@ class DocumentsPage extends StatefulWidget {
 class _DocumentsPageState extends State<DocumentsPage> {
   final List<DocumentEntity> _documents = List.from(DocumentModel.mockDocuments);
   String _selectedCategory = 'Semua Kategori';
+  int _activeTab = 0; // 0: Dokumen Aktif, 1: Arsip Dokumen
 
   List<DocumentEntity> get _filteredDocuments {
-    if (_selectedCategory == 'Semua Kategori') return _documents;
-    return _documents.where((d) => d.category.toLowerCase() == _selectedCategory.toLowerCase()).toList();
+    final baseList = _documents.where((d) => _activeTab == 0 ? !d.isArchived : d.isArchived).toList();
+    if (_selectedCategory == 'Semua Kategori') return baseList;
+    return baseList.where((d) => d.category.toLowerCase() == _selectedCategory.toLowerCase()).toList();
   }
 
   void _showUploadDialog() {
@@ -53,7 +55,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
               const Text('Kategori Dokumen', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
               const SizedBox(height: 6),
               DropdownButtonFormField<String>(
-                initialValue: cat,
+                value: cat,
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
@@ -168,14 +170,93 @@ class _DocumentsPageState extends State<DocumentsPage> {
       body: SafeArea(
         child: Column(
           children: [
+            // Tab Switcher (Dokumen Aktif vs Arsip Dokumen)
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF1F5F9),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(8),
+                        onTap: () => setState(() => _activeTab = 0),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          decoration: BoxDecoration(
+                            color: _activeTab == 0 ? Colors.white : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: _activeTab == 0
+                                ? [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(alpha: 0.05),
+                                      blurRadius: 2,
+                                      offset: const Offset(0, 1),
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Dokumen Aktif (${_documents.where((d) => !d.isArchived).length})',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: _activeTab == 0 ? const Color(0xFF1D4ED8) : const Color(0xFF64748B),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(8),
+                        onTap: () => setState(() => _activeTab = 1),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          decoration: BoxDecoration(
+                            color: _activeTab == 1 ? Colors.white : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: _activeTab == 1
+                                ? [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(alpha: 0.05),
+                                      blurRadius: 2,
+                                      offset: const Offset(0, 1),
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Arsip Dokumen (${_documents.where((d) => d.isArchived).length})',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: _activeTab == 1 ? const Color(0xFF1D4ED8) : const Color(0xFF64748B),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
             // Filter Categories Bar
             Container(
               color: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: ['Semua Kategori', 'Kontrak', 'Gambar_Kerja', 'RAB', 'Laporan'].map((cat) {
+                  children: ['Semua Kategori', 'Kontrak', 'Gambar_Kerja', 'RAB', 'Laporan', 'Legal'].map((cat) {
                     final isSel = _selectedCategory.toLowerCase() == cat.toLowerCase();
                     return Padding(
                       padding: const EdgeInsets.only(right: 8),
@@ -201,7 +282,12 @@ class _DocumentsPageState extends State<DocumentsPage> {
             // Documents List
             Expanded(
               child: list.isEmpty
-                  ? const Center(child: Text('Tidak ada dokumen yang ditemukan.', style: TextStyle(color: Color(0xFF94A3B8))))
+                  ? Center(
+                      child: Text(
+                        _activeTab == 0 ? 'Tidak ada berkas dokumen aktif.' : 'Tidak ada berkas yang diarsipkan.',
+                        style: const TextStyle(color: Color(0xFF94A3B8)),
+                      ),
+                    )
                   : ListView.separated(
                       padding: const EdgeInsets.all(16),
                       itemCount: list.length,
@@ -252,21 +338,71 @@ class _DocumentsPageState extends State<DocumentsPage> {
                                     const SizedBox(height: 3),
                                     Text(d.projectName, style: const TextStyle(fontSize: 11, color: Color(0xFF64748B))),
                                     const SizedBox(height: 4),
-                                    Text('${d.category.toUpperCase()} · ${d.size} · Oleh ${d.uploadedBy}', style: const TextStyle(fontSize: 10, color: Color(0xFF94A3B8))),
+                                    Text(
+                                      '${d.category.toUpperCase()} · ${d.size} · Oleh ${d.uploadedBy}',
+                                      style: const TextStyle(fontSize: 10, color: Color(0xFF94A3B8)),
+                                    ),
+                                    if (d.isArchived) ...[
+                                      const SizedBox(height: 4),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFFEF2F2),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: const Text(
+                                          'Diarsipkan',
+                                          style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Color(0xFFDC2626)),
+                                        ),
+                                      ),
+                                    ],
                                   ],
                                 ),
                               ),
-                              IconButton(
-                                icon: const Icon(Icons.download_rounded, color: Color(0xFF1D4ED8), size: 20),
-                                tooltip: 'Unduh Berkas',
-                                onPressed: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Mengunduh berkas ${d.name}...'),
-                                      behavior: SnackBarBehavior.floating,
+                              Column(
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.download_rounded, color: Color(0xFF1D4ED8), size: 20),
+                                    tooltip: 'Unduh Berkas',
+                                    onPressed: () {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text('Mengunduh berkas ${d.name}...'),
+                                          behavior: SnackBarBehavior.floating,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: Icon(
+                                      d.isArchived ? Icons.unarchive_rounded : Icons.archive_outlined,
+                                      color: d.isArchived ? const Color(0xFF059669) : const Color(0xFF64748B),
+                                      size: 18,
                                     ),
-                                  );
-                                },
+                                    tooltip: d.isArchived ? 'Pulihkan Dokumen' : 'Arsipkan Dokumen',
+                                    onPressed: () {
+                                      final targetIdx = _documents.indexWhere((doc) => doc.id == d.id);
+                                      if (targetIdx != -1) {
+                                        setState(() {
+                                          _documents[targetIdx] = d.copyWith(
+                                            isArchived: !d.isArchived,
+                                            archivedAt: !d.isArchived ? DateTime.now() : null,
+                                          );
+                                        });
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              !d.isArchived
+                                                  ? 'Dokumen berhasil dipindahkan ke tab Arsip.'
+                                                  : 'Dokumen berhasil dipulihkan ke Dokumen Aktif.',
+                                            ),
+                                            behavior: SnackBarBehavior.floating,
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ],
                               ),
                             ],
                           ),

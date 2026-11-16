@@ -39,6 +39,17 @@ class _ProgressReportPageState extends State<ProgressReportPage> {
       return;
     }
 
+    if (45.0 + addVal > 100.0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Persentase progres pekerjaan tidak boleh melebihi 100%.'),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Color(0xFFE11D48),
+        ),
+      );
+      return;
+    }
+
     setState(() {
       _reports.insert(
         0,
@@ -148,22 +159,48 @@ class _ProgressReportPageState extends State<ProgressReportPage> {
                       controller: _addProgressController,
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       decoration: InputDecoration(
+                        suffixText: '%',
                         hintText: 'Contoh: 3.5',
                         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                       ),
                     ),
                     const SizedBox(height: 12),
-                    const Text('Uraian Capaian Pekerjaan', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
+                    const Text('Uraian Capaian Pekerjaan & Kendala Lapangan', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
                     const SizedBox(height: 6),
                     TextField(
                       controller: _descController,
                       maxLines: 2,
                       decoration: InputDecoration(
-                        hintText: 'Uraikan rincian pekerjaan yang telah diselesaikan di lapangan...',
+                        hintText: 'Uraikan rincian pekerjaan atau kendala cuaca/teknis...',
                         hintStyle: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
                         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF8FAFC),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: const Color(0xFFE2E8F0)),
+                      ),
+                      child: Row(
+                        children: const [
+                          Icon(Icons.add_photo_alternate_outlined, size: 20, color: Color(0xFF1D4ED8)),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Dokumentasi Foto Lapangan', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+                                Text('Maksimal 5 foto &bull; JPG, PNG, WEBP', style: TextStyle(fontSize: 10, color: Color(0xFF64748B))),
+                              ],
+                            ),
+                          ),
+                          Text('2 Terpilih', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF059669))),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -210,13 +247,17 @@ class _ProgressReportPageState extends State<ProgressReportPage> {
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
                               child: Text(
                                 r.projectName,
                                 style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
                               ),
                             ),
+                            const SizedBox(width: 8),
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                               decoration: BoxDecoration(

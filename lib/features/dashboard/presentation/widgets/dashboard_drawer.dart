@@ -1,29 +1,34 @@
 import 'package:flutter/material.dart';
+import '../../../../core/access_control.dart';
 import '../../../settings/presentation/pages/system_settings_page.dart';
 
 class DashboardDrawer extends StatelessWidget {
   final ValueChanged<int>? onSelectTab;
+  final String? role;
 
-  const DashboardDrawer({super.key, this.onSelectTab});
+  const DashboardDrawer({super.key, this.onSelectTab, this.role});
 
   @override
   Widget build(BuildContext context) {
     final menuItems = [
-      _DrawerItemData(title: 'Dashboard', icon: Icons.dashboard_rounded, isSelected: true),
-      _DrawerItemData(title: 'Klien & Vendor', icon: Icons.people_alt_outlined),
-      _DrawerItemData(title: 'Survei Lokasi', icon: Icons.pin_drop_outlined),
-      _DrawerItemData(title: 'Validasi Survei', icon: Icons.fact_check_outlined),
-      _DrawerItemData(title: 'Daftar Proyek', icon: Icons.format_list_bulleted_rounded),
-      _DrawerItemData(title: 'Laporan Pengerjaan Proyek', icon: Icons.description_outlined),
-      _DrawerItemData(title: 'Logistik & Material', icon: Icons.inventory_2_outlined),
-      _DrawerItemData(title: 'Pengajuan Material', icon: Icons.shopping_bag_outlined),
-      _DrawerItemData(title: 'Alat Berat & Aset', icon: Icons.local_shipping_outlined),
-      _DrawerItemData(title: 'Keuangan Proyek', icon: Icons.account_balance_wallet_outlined),
-      _DrawerItemData(title: 'Dokumen Proyek', icon: Icons.folder_outlined),
-      _DrawerItemData(title: 'Generate Laporan', icon: Icons.print_outlined),
-      _DrawerItemData(title: 'Kelola User', icon: Icons.manage_accounts_outlined),
-      _DrawerItemData(title: 'Pengaturan Sistem', icon: Icons.settings_outlined),
+      _DrawerItemData(title: 'Dashboard', icon: Icons.dashboard_rounded, permission: AppPermissions.dashboardView, isSelected: true),
+      _DrawerItemData(title: 'Klien & Vendor', icon: Icons.people_alt_outlined, permission: AppPermissions.clientsView),
+      _DrawerItemData(title: 'Survei Lokasi', icon: Icons.pin_drop_outlined, permission: AppPermissions.siteSurveysView),
+      _DrawerItemData(title: 'Validasi Survei', icon: Icons.fact_check_outlined, permission: AppPermissions.siteSurveysApprove),
+      _DrawerItemData(title: 'Daftar Proyek', icon: Icons.format_list_bulleted_rounded, permission: AppPermissions.projectsView),
+      _DrawerItemData(title: 'Laporan Pengerjaan Proyek', icon: Icons.description_outlined, permission: AppPermissions.progressView),
+      _DrawerItemData(title: 'Logistik & Material', icon: Icons.inventory_2_outlined, permission: AppPermissions.materialsView),
+      _DrawerItemData(title: 'Pengajuan Material', icon: Icons.shopping_bag_outlined, permission: AppPermissions.materialRequestsView),
+      _DrawerItemData(title: 'Alat Berat & Aset', icon: Icons.local_shipping_outlined, permission: AppPermissions.equipmentsView),
+      _DrawerItemData(title: 'Keuangan Proyek', icon: Icons.account_balance_wallet_outlined, permission: AppPermissions.financeView),
+      _DrawerItemData(title: 'Dokumen Proyek', icon: Icons.folder_outlined, permission: AppPermissions.documentsView),
+      _DrawerItemData(title: 'Generate Laporan', icon: Icons.print_outlined, permission: AppPermissions.reportsExport),
+      _DrawerItemData(title: 'Kelola User', icon: Icons.manage_accounts_outlined, permission: AppPermissions.usersView),
+      _DrawerItemData(title: 'Pengaturan Sistem', icon: Icons.settings_outlined, permission: AppPermissions.settingsView),
     ];
+    final visibleMenuItems = menuItems
+        .where((item) => AccessControl.can(role, item.permission))
+        .toList();
 
     return Drawer(
       backgroundColor: Colors.white,
@@ -86,10 +91,10 @@ class DashboardDrawer extends StatelessWidget {
             Expanded(
               child: ListView.separated(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                itemCount: menuItems.length,
+                itemCount: visibleMenuItems.length,
                 separatorBuilder: (context, index) => const SizedBox(height: 4),
                 itemBuilder: (context, index) {
-                  final item = menuItems[index];
+                  final item = visibleMenuItems[index];
                   return _DrawerTile(
                     item: item,
                     onTap: () {
@@ -154,11 +159,13 @@ class DashboardDrawer extends StatelessWidget {
 class _DrawerItemData {
   final String title;
   final IconData icon;
+  final String permission;
   final bool isSelected;
 
   _DrawerItemData({
     required this.title,
     required this.icon,
+    required this.permission,
     this.isSelected = false,
   });
 }

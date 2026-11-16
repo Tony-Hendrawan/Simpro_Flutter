@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/access_control.dart';
 import '../../../profile/presentation/pages/profile_page.dart';
 import '../../../reports/presentation/pages/statistics_page.dart';
 import '../widgets/dashboard_widgets.dart';
@@ -15,6 +16,23 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   int _selectedIndex = 0;
+  String? _role;
+  String _userName = 'Pengguna';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    final user = await AccessControl.currentUser();
+    if (!mounted || user == null) return;
+    setState(() {
+      _role = user.role;
+      _userName = user.name;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,9 +87,10 @@ class _DashboardPageState extends State<DashboardPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const _GreetingHeader(),
+            _GreetingHeader(userName: _userName, role: _role),
             const SizedBox(height: 16),
             DashboardQuickActions(
+              role: _role,
               onSelectTab: (index) => setState(() => _selectedIndex = index),
             ),
             const SizedBox(height: 24),
@@ -84,7 +103,10 @@ class _DashboardPageState extends State<DashboardPage> {
 
 // ── Header Sapaan ──
 class _GreetingHeader extends StatelessWidget {
-  const _GreetingHeader();
+  final String userName;
+  final String? role;
+
+  const _GreetingHeader({required this.userName, required this.role});
 
   @override
   Widget build(BuildContext context) {
@@ -114,9 +136,9 @@ class _GreetingHeader extends StatelessWidget {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
-                  'Selamat datang, Admin',
+                  'Selamat datang, $userName',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -125,7 +147,7 @@ class _GreetingHeader extends StatelessWidget {
                 ),
                 SizedBox(height: 2),
                 Text(
-                  'CV ARTHAMAS GRAHA · Portal Layanan',
+                  'CV ARTHAMAS GRAHA · ${role?.toUpperCase() ?? 'PORTAL LAYANAN'}',
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,

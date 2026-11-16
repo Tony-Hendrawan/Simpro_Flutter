@@ -10,6 +10,11 @@ class SurveyModel extends SurveyEntity {
     required super.landCondition,
     required super.status,
     required super.notes,
+    super.areaSize,
+    super.elevation,
+    super.soilType,
+    super.contour,
+    super.accessibility,
   });
 
   static List<SurveyModel> get mockSurveys => const [
@@ -22,6 +27,11 @@ class SurveyModel extends SurveyEntity {
       landCondition: 'Datar & Kering',
       status: 'approved',
       notes: 'Daya dukung tanah baik, akses jalan masuk kontainer 20ft aman.',
+      areaSize: 1.5,
+      elevation: 24.5,
+      soilType: 'Tanah Lempung/Liat',
+      contour: 'Datar',
+      accessibility: 'Jalan aspal 2 jalur, bisa dilalui truk tronton & mixer beton.',
     ),
     SurveyModel(
       id: 2,
@@ -32,6 +42,11 @@ class SurveyModel extends SurveyEntity {
       landCondition: 'Struktur Eksisting Baik',
       status: 'approved',
       notes: 'Pondasi awal kokoh, hanya perlu perkuatan kolom lantai 2.',
+      areaSize: 0.8,
+      elevation: 12.0,
+      soilType: 'Tanah Keras/Padas',
+      contour: 'Datar',
+      accessibility: 'Jalan protokol kawasan pariwisata, akses truk material malam hari.',
     ),
     SurveyModel(
       id: 3,
@@ -42,6 +57,11 @@ class SurveyModel extends SurveyEntity {
       landCondition: 'Lembek & Rawan Erosi',
       status: 'review',
       notes: 'Diperlukan bore pile kedalaman minimum 18 meter untuk stabilitas.',
+      areaSize: 2.2,
+      elevation: 185.0,
+      soilType: 'Tanah Berpasir',
+      contour: 'Miring/Berbukit',
+      accessibility: 'Jalan desa beton lebar 4 meter, perlu pelebaran manuver alat berat.',
     ),
     SurveyModel(
       id: 4,
@@ -52,6 +72,11 @@ class SurveyModel extends SurveyEntity {
       landCondition: 'Kontur Bergelombang',
       status: 'pending',
       notes: 'Perlu cut and fill tanah sebelum pembangunan pondasi blok B.',
+      areaSize: 5.4,
+      elevation: 65.0,
+      soilType: 'Tanah Lempung/Liat',
+      contour: 'Bergelombang',
+      accessibility: 'Akses jalan cor beton terhubung langsung dengan jalan lingkar luar.',
     ),
     SurveyModel(
       id: 5,
@@ -62,6 +87,11 @@ class SurveyModel extends SurveyEntity {
       landCondition: 'Datar Bebas Banjir',
       status: 'pending',
       notes: 'Menunggu review dokumen elevasi tanah dari Dinas PUPR setempat.',
+      areaSize: 3.0,
+      elevation: 32.0,
+      soilType: 'Tanah Keras/Padas',
+      contour: 'Datar',
+      accessibility: 'Kawasan industri, akses jalan kontainer 40ft bebas hambatan.',
     ),
   ];
 }

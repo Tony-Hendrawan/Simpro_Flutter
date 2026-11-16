@@ -186,12 +186,15 @@ class _FinancePageState extends State<FinancePage> {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Text(
-                          '${isIncome ? '+' : '-'}${_formatRp(t.amount)}',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: isIncome ? const Color(0xFF059669) : const Color(0xFF0F172A),
+                        Flexible(
+                          child: Text(
+                            '${isIncome ? '+' : '-'}${_formatRp(t.amount)}',
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: isIncome ? const Color(0xFF059669) : const Color(0xFF0F172A),
+                            ),
                           ),
                         ),
                       ],

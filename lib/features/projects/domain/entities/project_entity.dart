@@ -10,6 +10,7 @@ class ProjectEntity {
   final double progress;
   final String status; // 'aktif', 'perencanaan', 'selesai', 'tertunda'
   final String manager;
+  final int completedDocsCount;
 
   const ProjectEntity({
     required this.id,
@@ -23,5 +24,6 @@ class ProjectEntity {
     required this.progress,
     required this.status,
     required this.manager,
+    this.completedDocsCount = 4,
   });
 }

@@ -24,6 +24,328 @@ class _MaterialRequestsPageState extends State<MaterialRequestsPage> {
     return 'Rp ${val.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')}';
   }
 
+  void _showBatchInputPosModal() {
+    final projectController = TextEditingController(text: 'Pembangunan Gedung Kantor PT Maju Jaya');
+    final List<Map<String, dynamic>> batchItems = [
+      {
+        'name': 'Semen Gresik Portland Composite',
+        'type': 'Beli',
+        'qty': 50,
+        'unit': 'Sak',
+        'price': 68000.0,
+      },
+      {
+        'name': 'Besi Beton Ulir D13 mm x 12m',
+        'type': 'Beli',
+        'qty': 20,
+        'unit': 'Batang',
+        'price': 115000.0,
+      },
+    ];
+
+    final itemNameController = TextEditingController();
+    final itemQtyController = TextEditingController(text: '10');
+    final itemPriceController = TextEditingController(text: '50000');
+    final itemUnitController = TextEditingController(text: 'Unit');
+    String itemType = 'Beli';
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setModalState) {
+          double grandTotal = 0;
+          for (final it in batchItems) {
+            grandTotal += (it['qty'] as int) * (it['price'] as double);
+          }
+
+          return Padding(
+            padding: EdgeInsets.only(
+              left: 20,
+              right: 20,
+              top: 20,
+              bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: const [
+                          Icon(Icons.point_of_sale_rounded, color: Color(0xFF1D4ED8), size: 22),
+                          SizedBox(width: 8),
+                          Text(
+                            'Batch Input POS Pengajuan',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                          ),
+                        ],
+                      ),
+                      IconButton(icon: const Icon(Icons.close_rounded), onPressed: () => Navigator.pop(ctx)),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Input cepat multi-item material (katalog gudang maupun custom) dalam satu keranjang pengajuan massal.',
+                    style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                  ),
+                  const SizedBox(height: 14),
+                  const Text('Pilih Proyek Penerima', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
+                  const SizedBox(height: 6),
+                  TextField(
+                    controller: projectController,
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF8FAFC),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Tambah Item ke Keranjang', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+                        const SizedBox(height: 10),
+                        TextField(
+                          controller: itemNameController,
+                          decoration: InputDecoration(
+                            hintText: 'Nama material / alat (gudang / custom)',
+                            hintStyle: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: DropdownButtonFormField<String>(
+                                initialValue: itemType,
+                                decoration: InputDecoration(
+                                  labelText: 'Pengadaan',
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                                ),
+                                items: const [
+                                  DropdownMenuItem(value: 'Beli', child: Text('Beli (New)', style: TextStyle(fontSize: 12))),
+                                  DropdownMenuItem(value: 'Sewa', child: Text('Sewa (Rent)', style: TextStyle(fontSize: 12))),
+                                ],
+                                onChanged: (v) => setModalState(() => itemType = v ?? 'Beli'),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              flex: 2,
+                              child: TextField(
+                                controller: itemQtyController,
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  labelText: 'Jumlah',
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              flex: 2,
+                              child: TextField(
+                                controller: itemUnitController,
+                                decoration: InputDecoration(
+                                  labelText: 'Satuan',
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: itemPriceController,
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  labelText: 'Est. Harga Satuan (Rp)',
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                if (itemNameController.text.trim().isEmpty) return;
+                                final q = int.tryParse(itemQtyController.text.trim()) ?? 1;
+                                final p = double.tryParse(itemPriceController.text.trim()) ?? 0;
+                                setModalState(() {
+                                  batchItems.add({
+                                    'name': itemNameController.text.trim(),
+                                    'type': itemType,
+                                    'qty': q,
+                                    'unit': itemUnitController.text.trim().isNotEmpty ? itemUnitController.text.trim() : 'Unit',
+                                    'price': p,
+                                  });
+                                  itemNameController.clear();
+                                });
+                              },
+                              icon: const Icon(Icons.add, size: 16),
+                              label: const Text('Tambah'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF1D4ED8),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  const Text('Daftar Keranjang Pengajuan', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                  const SizedBox(height: 8),
+                  if (batchItems.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: Text('Belum ada item dalam keranjang.', style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8))),
+                    )
+                  else
+                    ...batchItems.asMap().entries.map((entry) {
+                      final i = entry.key;
+                      final it = entry.value;
+                      final subtotal = (it['qty'] as int) * (it['price'] as double);
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 6),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: it['type'] == 'Beli' ? const Color(0xFFEFF6FF) : const Color(0xFFFEF3C7),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                it['type'] as String,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: it['type'] == 'Beli' ? const Color(0xFF1D4ED8) : const Color(0xFFB45309),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    it['name'] as String,
+                                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                                  ),
+                                  Text(
+                                    '${it['qty']} ${it['unit']} x ${_formatRp(it['price'] as double)} = ${_formatRp(subtotal)}',
+                                    style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline_rounded, size: 18, color: Color(0xFFE11D48)),
+                              onPressed: () => setModalState(() => batchItems.removeAt(i)),
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEFF6FF),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Total Estimasi Anggaran:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+                        Text(_formatRp(grandTotal), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF1D4ED8))),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: batchItems.isEmpty
+                          ? null
+                          : () {
+                              for (final it in batchItems) {
+                                final cost = (it['qty'] as int) * (it['price'] as double);
+                                _requests.insert(
+                                  0,
+                                  MaterialRequestEntity(
+                                    id: DateTime.now().millisecondsSinceEpoch + batchItems.indexOf(it),
+                                    requestCode: 'POS-2026-00${_requests.length + 1}',
+                                    projectName: projectController.text.trim(),
+                                    materialName: '${it['name']} (${it['type']})',
+                                    quantity: it['qty'] as int,
+                                    unit: it['unit'] as String,
+                                    status: 'pending',
+                                    requestedBy: 'Pelaksana Lapangan',
+                                    date: 'Hari ini',
+                                    estimatedCost: cost,
+                                  ),
+                                );
+                              }
+                              setState(() {});
+                              Navigator.pop(ctx);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Berhasil membuat batch pengajuan ${batchItems.length} material!'),
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF1D4ED8),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                      child: const Text('SUBMIT BATCH PENGAJUAN POS', style: TextStyle(fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   void _showAddRequestModal() {
     final codeController = TextEditingController(text: 'REQ-2026-00${_requests.length + 1}');
     final projectController = TextEditingController();
@@ -219,6 +541,11 @@ class _MaterialRequestsPageState extends State<MaterialRequestsPage> {
           child: Container(color: const Color(0xFFE2E8F0), height: 1),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.point_of_sale_rounded, color: Color(0xFF1D4ED8)),
+            tooltip: 'Batch Input POS',
+            onPressed: _showBatchInputPosModal,
+          ),
           IconButton(
             icon: const Icon(Icons.add_shopping_cart_rounded, color: Color(0xFF1D4ED8)),
             tooltip: 'Buat Pengajuan',

@@ -76,7 +76,7 @@ class _ClientsPageState extends State<ClientsPage> {
                 const Text('Kategori', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
                 const SizedBox(height: 6),
                 DropdownButtonFormField<String>(
-                  initialValue: category,
+                  value: category,
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),

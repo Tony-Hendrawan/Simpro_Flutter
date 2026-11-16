@@ -35,6 +35,10 @@ class _MaterialsPageState extends State<MaterialsPage> {
     final minStockController = TextEditingController();
     final priceController = TextEditingController();
     final unitController = TextEditingController(text: 'Sak');
+    final specController = TextEditingController();
+    final supplierController = TextEditingController();
+    final rentalController = TextEditingController();
+    final discountPercentController = TextEditingController();
 
     showModalBottomSheet(
       context: context,
@@ -71,6 +75,46 @@ class _MaterialsPageState extends State<MaterialsPage> {
                   contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                 ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Spesifikasi / Standar', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
+                        const SizedBox(height: 6),
+                        TextField(
+                          controller: specController,
+                          decoration: InputDecoration(
+                            hintText: 'SNI / Mutu beton',
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Supplier / Vendor', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
+                        const SizedBox(height: 6),
+                        TextField(
+                          controller: supplierController,
+                          decoration: InputDecoration(
+                            hintText: 'Nama vendor',
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 12),
               Row(
@@ -121,7 +165,7 @@ class _MaterialsPageState extends State<MaterialsPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Harga Satuan (Rp)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
+                        const Text('Harga Beli Satuan (Rp)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
                         const SizedBox(height: 6),
                         TextField(
                           controller: priceController,
@@ -155,6 +199,48 @@ class _MaterialsPageState extends State<MaterialsPage> {
                   ),
                 ],
               ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Tarif Sewa/Satuan (Opsional)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
+                        const SizedBox(height: 6),
+                        TextField(
+                          controller: rentalController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            hintText: 'Contoh: 15000',
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Diskon Promo (%)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
+                        const SizedBox(height: 6),
+                        TextField(
+                          controller: discountPercentController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            hintText: 'Contoh: 10',
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
@@ -164,6 +250,8 @@ class _MaterialsPageState extends State<MaterialsPage> {
                     final stock = int.tryParse(stockController.text.trim()) ?? 0;
                     final minStock = int.tryParse(minStockController.text.trim()) ?? 0;
                     final price = double.tryParse(priceController.text.trim()) ?? 0;
+                    final rental = double.tryParse(rentalController.text.trim());
+                    final disc = double.tryParse(discountPercentController.text.trim());
 
                     setState(() {
                       _materials.insert(
@@ -175,6 +263,10 @@ class _MaterialsPageState extends State<MaterialsPage> {
                           minimumStock: minStock,
                           pricePerUnit: price,
                           unit: unitController.text.trim().isNotEmpty ? unitController.text.trim() : 'Unit',
+                          specification: specController.text.trim().isNotEmpty ? specController.text.trim() : null,
+                          supplier: supplierController.text.trim().isNotEmpty ? supplierController.text.trim() : null,
+                          rentalPricePerUnit: rental,
+                          discountPercent: disc,
                         ),
                       );
                     });
@@ -197,6 +289,83 @@ class _MaterialsPageState extends State<MaterialsPage> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  void _showImportCsvModal() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: const [
+                    Icon(Icons.upload_file_rounded, color: Color(0xFF1D4ED8), size: 24),
+                    SizedBox(width: 8),
+                    Text('Impor Data Material (CSV)', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                  ],
+                ),
+                IconButton(icon: const Icon(Icons.close_rounded), onPressed: () => Navigator.pop(ctx)),
+              ],
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Unggah berkas CSV untuk memperbarui stok atau menambahkan katalog material secara massal. Format header yang didukung: name, unit, stock, minimum_stock, price_per_unit, specification, supplier.',
+              style: TextStyle(fontSize: 12, color: Color(0xFF64748B), height: 1.4),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFFCBD5E1), style: BorderStyle.solid),
+              ),
+              child: Column(
+                children: const [
+                  Icon(Icons.cloud_upload_outlined, size: 36, color: Color(0xFF64748B)),
+                  SizedBox(height: 8),
+                  Text('Pilih Berkas CSV / Excel Template', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+                  SizedBox(height: 4),
+                  Text('Ukuran maksimal berkas 5 MB', style: TextStyle(fontSize: 11, color: Color(0xFF94A3B8))),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.check_circle_outline_rounded, size: 18),
+                label: const Text('PROSES IMPOR MASSAL', style: TextStyle(fontWeight: FontWeight.bold)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF1D4ED8),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Simulasi impor berkas CSV berhasil diproses.'),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -226,6 +395,11 @@ class _MaterialsPageState extends State<MaterialsPage> {
           child: Container(color: const Color(0xFFE2E8F0), height: 1),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.upload_file_rounded, color: Color(0xFF1D4ED8)),
+            tooltip: 'Impor CSV',
+            onPressed: _showImportCsvModal,
+          ),
           IconButton(
             icon: const Icon(Icons.add_box_rounded, color: Color(0xFF1D4ED8)),
             tooltip: 'Tambah Material',
@@ -309,28 +483,94 @@ class _MaterialsPageState extends State<MaterialsPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Expanded(
-                                    child: Text(
-                                      m.name,
-                                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          m.name,
+                                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                                        ),
+                                        if (m.specification != null) ...[
+                                          const SizedBox(height: 2),
+                                          Text(
+                                            'Spek: ${m.specification}',
+                                            style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+                                          ),
+                                        ],
+                                        if (m.supplier != null) ...[
+                                          const SizedBox(height: 2),
+                                          Row(
+                                            children: [
+                                              const Icon(Icons.storefront_outlined, size: 12, color: Color(0xFF94A3B8)),
+                                              const SizedBox(width: 4),
+                                              Expanded(
+                                                child: Text(
+                                                  m.supplier!,
+                                                  style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ],
                                     ),
                                   ),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                                    decoration: BoxDecoration(
-                                      color: isCrit ? const Color(0xFFFFF1F2) : const Color(0xFFECFDF5),
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    child: Text(
-                                      isCrit ? 'STOK KRITIS' : 'AMAN',
-                                      style: TextStyle(
-                                        fontSize: 9,
-                                        fontWeight: FontWeight.bold,
-                                        color: isCrit ? const Color(0xFFE11D48) : const Color(0xFF059669),
+                                  const SizedBox(width: 8),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                        decoration: BoxDecoration(
+                                          color: isCrit ? const Color(0xFFFFF1F2) : const Color(0xFFECFDF5),
+                                          borderRadius: BorderRadius.circular(6),
+                                        ),
+                                        child: Text(
+                                          isCrit ? 'STOK KRITIS' : 'AMAN',
+                                          style: TextStyle(
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.bold,
+                                            color: isCrit ? const Color(0xFFE11D48) : const Color(0xFF059669),
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                      if (m.hasActiveDiscount) ...[
+                                        const SizedBox(height: 4),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFFFEF3C7),
+                                            borderRadius: BorderRadius.circular(4),
+                                          ),
+                                          child: Text(
+                                            m.discountPercent != null
+                                                ? 'Promo ${m.discountPercent!.toInt()}%'
+                                                : 'Promo Potongan',
+                                            style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Color(0xFFB45309)),
+                                          ),
+                                        ),
+                                      ],
+                                      if (m.rentalPricePerUnit != null) ...[
+                                        const SizedBox(height: 4),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFFEFF6FF),
+                                            borderRadius: BorderRadius.circular(4),
+                                          ),
+                                          child: Text(
+                                            'Sewa: ${_formatRp(m.rentalPricePerUnit!)}/${m.unit}',
+                                            style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Color(0xFF1D4ED8)),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
                                   ),
                                 ],
                               ),
+                              const SizedBox(height: 10),
+                              const Divider(height: 1, color: Color(0xFFF1F5F9)),
                               const SizedBox(height: 8),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -343,9 +583,37 @@ class _MaterialsPageState extends State<MaterialsPage> {
                                       color: isCrit ? const Color(0xFFE11D48) : const Color(0xFF334155),
                                     ),
                                   ),
-                                  Text(
-                                    _formatRp(m.pricePerUnit),
-                                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF1D4ED8)),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      if (m.hasActiveDiscount) ...[
+                                        Text(
+                                          _formatRp(m.pricePerUnit),
+                                          style: const TextStyle(
+                                            fontSize: 10,
+                                            decoration: TextDecoration.lineThrough,
+                                            color: Color(0xFF94A3B8),
+                                          ),
+                                        ),
+                                        Text(
+                                          _formatRp(m.effectivePrice),
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color(0xFF059669),
+                                          ),
+                                        ),
+                                      ] else ...[
+                                        Text(
+                                          _formatRp(m.pricePerUnit),
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color(0xFF1D4ED8),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
                                   ),
                                 ],
                               ),
