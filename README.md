@@ -1,4 +1,4 @@
-﻿
+
 ## Fitur
 
 ### 1. authentication/
@@ -130,7 +130,7 @@
 - Atur permission per modul
 
 **Role yang ada:**
-- Owner/Direktur
+- Owner
 - Administrator Sistem
 - Staf Keuangan
 - Staf Logistik

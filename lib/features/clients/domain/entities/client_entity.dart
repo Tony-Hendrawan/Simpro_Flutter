@@ -5,6 +5,9 @@ class ClientEntity {
   final String phone;
   final String address;
   final String category; // 'Klien', 'Vendor', 'Subkontraktor'
+  final String contactPerson;
+  final String status; // 'aktif', 'nonaktif'
+  final String company;
 
   const ClientEntity({
     required this.id,
@@ -13,5 +16,8 @@ class ClientEntity {
     required this.phone,
     required this.address,
     required this.category,
+    this.contactPerson = '',
+    this.status = 'aktif',
+    this.company = '',
   });
 }

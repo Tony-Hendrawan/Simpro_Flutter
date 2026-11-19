@@ -7,9 +7,10 @@ class SurveyEntity {
   final String landCondition; // 'Datar', 'Bergelombang', 'Miring/Berbukit'
   final String status; // 'pending', 'review', 'approved', 'rejected'
   final String notes;
-  final double? areaSize; // Satuan: Hektar (Ha)
-  final double? elevation; // Satuan: mdpl
-  final String? soilType; // Jenis Tanah: Tanah Lempung/Liat, Tanah Keras/Padas, dll.
+  final double? areaSize; // Satuan: m2
+  final double? elevation; // Satuan: m
+  final String?
+  soilType; // Jenis Tanah: Tanah Lempung/Liat, Tanah Keras/Padas, dll.
   final String? contour; // Kontur: Datar, Bergelombang, Miring/Berbukit
   final String? accessibility; // Akses Jalan Menuju Lokasi
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/summary_widgets.dart';
 import '../../data/models/user_account_model.dart';
 import '../../domain/entities/user_account_entity.dart';
 
@@ -13,29 +14,46 @@ class UsersManagementPage extends StatefulWidget {
 
 class _UsersManagementPageState extends State<UsersManagementPage> {
   final List<UserAccountEntity> _users = List.from(UserAccountModel.mockUsers);
+  final TextEditingController _searchController = TextEditingController();
   String _selectedRole = 'Semua Peran';
 
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   List<UserAccountEntity> get _filteredUsers {
-    if (_selectedRole == 'Semua Peran') return _users;
-    return _users.where((u) => u.role.toLowerCase() == _selectedRole.toLowerCase()).toList();
+    final q = _searchController.text.trim().toLowerCase();
+    return _users.where((u) {
+      final matchesRole = _selectedRole == 'Semua Peran' ||
+          u.role.toLowerCase() == _selectedRole.toLowerCase();
+      final matchesSearch = q.isEmpty ||
+          u.name.toLowerCase().contains(q) ||
+          u.username.toLowerCase().contains(q) ||
+          u.email.toLowerCase().contains(q);
+      return matchesRole && matchesSearch;
+    }).toList();
   }
 
   String _getRoleLabel(String role) {
     switch (role.toLowerCase()) {
       case 'owner':
-        return 'Owner / Direktur';
+        return 'Owner';
       case 'admin':
         return 'Administrator Sistem';
-      case 'administrasi':
-        return 'Staf Administrasi';
-      case 'konsultan':
-        return 'Konsultan Teknik';
       case 'pengawas':
         return 'Pengawas Lapangan';
+      case 'pelaksana':
+        return 'Pelaksana Lapangan';
+      case 'konsultan':
+        return 'Konsultan Teknik';
       case 'logistik':
         return 'Staf Logistik';
       case 'keuangan':
         return 'Staf Keuangan';
+      case 'administrasi':
+        return 'Staf Administrasi';
       default:
         return role;
     }
@@ -46,15 +64,40 @@ class _UsersManagementPageState extends State<UsersManagementPage> {
       case 'owner':
         return const Color(0xFF1D4ED8);
       case 'admin':
-        return const Color(0xFF6D28D9);
+        return const Color(0xFF4F46E5);
       case 'keuangan':
         return const Color(0xFF059669);
       case 'pengawas':
         return const Color(0xFF0284C7);
+      case 'konsultan':
+        return const Color(0xFF7C3AED);
       case 'logistik':
         return const Color(0xFFD97706);
+      case 'administrasi':
+        return const Color(0xFF0284C7);
       default:
         return const Color(0xFF475569);
+    }
+  }
+
+  Color _getRoleBgColor(String role) {
+    switch (role.toLowerCase()) {
+      case 'owner':
+        return const Color(0xFFEFF6FF);
+      case 'admin':
+        return const Color(0xFFEEF2FF);
+      case 'keuangan':
+        return const Color(0xFFECFDF5);
+      case 'pengawas':
+        return const Color(0xFFE0F2FE);
+      case 'konsultan':
+        return const Color(0xFFF5F3FF);
+      case 'logistik':
+        return const Color(0xFFFFFBEB);
+      case 'administrasi':
+        return const Color(0xFFF0F9FF);
+      default:
+        return const Color(0xFFF1F5F9);
     }
   }
 
@@ -113,13 +156,13 @@ class _UsersManagementPageState extends State<UsersManagementPage> {
                 ),
               ),
               const SizedBox(height: 12),
-              const Text('Email Pengguna', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
+              const Text('Alamat Email', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
               const SizedBox(height: 6),
               TextField(
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
-                  hintText: 'nama@arthamasgraha.com',
+                  hintText: 'user@arthamasgraha.com',
                   hintStyle: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
@@ -135,13 +178,13 @@ class _UsersManagementPageState extends State<UsersManagementPage> {
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                 ),
                 items: const [
-                  DropdownMenuItem(value: 'owner', child: Text('Owner / Direktur', style: TextStyle(fontSize: 13))),
+                  DropdownMenuItem(value: 'owner', child: Text('Owner', style: TextStyle(fontSize: 13))),
                   DropdownMenuItem(value: 'admin', child: Text('Administrator Sistem', style: TextStyle(fontSize: 13))),
-                  DropdownMenuItem(value: 'administrasi', child: Text('Staf Administrasi', style: TextStyle(fontSize: 13))),
-                  DropdownMenuItem(value: 'konsultan', child: Text('Konsultan Teknik', style: TextStyle(fontSize: 13))),
-                  DropdownMenuItem(value: 'pengawas', child: Text('Pengawas Lapangan', style: TextStyle(fontSize: 13))),
-                  DropdownMenuItem(value: 'logistik', child: Text('Staf Logistik', style: TextStyle(fontSize: 13))),
                   DropdownMenuItem(value: 'keuangan', child: Text('Staf Keuangan', style: TextStyle(fontSize: 13))),
+                  DropdownMenuItem(value: 'logistik', child: Text('Staf Logistik', style: TextStyle(fontSize: 13))),
+                  DropdownMenuItem(value: 'pengawas', child: Text('Pengawas Lapangan', style: TextStyle(fontSize: 13))),
+                  DropdownMenuItem(value: 'konsultan', child: Text('Konsultan Teknik', style: TextStyle(fontSize: 13))),
+                  DropdownMenuItem(value: 'administrasi', child: Text('Staf Administrasi', style: TextStyle(fontSize: 13))),
                 ],
                 onChanged: (val) {
                   if (val != null) role = val;
@@ -195,6 +238,10 @@ class _UsersManagementPageState extends State<UsersManagementPage> {
   @override
   Widget build(BuildContext context) {
     final list = _filteredUsers;
+    final totalUsers = _users.length;
+    final manajemenCount = _users.where((u) => u.role == 'owner' || u.role == 'admin').length;
+    final teknikCount = _users.where((u) => u.role == 'pengawas' || u.role == 'konsultan' || u.role == 'logistik' || u.role == 'pelaksana').length;
+    final bisnisCount = _users.where((u) => u.role == 'keuangan' || u.role == 'administrasi').length;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -223,21 +270,77 @@ class _UsersManagementPageState extends State<UsersManagementPage> {
         ],
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            // Filter Peran Bar
-            Container(
-              color: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: SingleChildScrollView(
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 4 Role Metric Cards (Persis Web v3)
+              Row(
+                children: [
+                  Expanded(
+                    child: AppMetricCard(
+                      title: 'Total Akun',
+                      value: '$totalUsers',
+                      accentColor: const Color(0xFF0F172A),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: AppMetricCard(
+                      title: 'Manajemen',
+                      value: '$manajemenCount',
+                      accentColor: const Color(0xFF1D4ED8),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: AppMetricCard(
+                      title: 'Teknik',
+                      value: '$teknikCount',
+                      accentColor: const Color(0xFFD97706),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: AppMetricCard(
+                      title: 'Bisnis & ADM',
+                      value: '$bisnisCount',
+                      accentColor: const Color(0xFF059669),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+
+              // Search Bar
+              AppSearchBar(
+                hintText: 'Cari nama lengkap, username, atau email tim...',
+                controller: _searchController,
+                onChanged: (_) => setState(() {}),
+              ),
+              const SizedBox(height: 10),
+
+              // Filter Peran Chips
+              SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: ['Semua Peran', 'Owner', 'Admin', 'Pengawas', 'Logistik', 'Keuangan'].map((r) {
+                  children: [
+                    'Semua Peran',
+                    'Owner',
+                    'Admin',
+                    'Keuangan',
+                    'Logistik',
+                    'Pengawas',
+                    'Konsultan',
+                    'Administrasi',
+                  ].map((r) {
                     final isSel = _selectedRole.toLowerCase() == r.toLowerCase();
                     return Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: ChoiceChip(
-                        label: Text(r),
+                        label: Text(r == 'Semua Peran' ? 'Semua Jabatan' : r),
                         labelStyle: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
@@ -245,89 +348,107 @@ class _UsersManagementPageState extends State<UsersManagementPage> {
                         ),
                         selected: isSel,
                         selectedColor: const Color(0xFF1D4ED8),
-                        backgroundColor: const Color(0xFFF1F5F9),
+                        backgroundColor: Colors.white,
                         onSelected: (_) => setState(() => _selectedRole = r),
                       ),
                     );
                   }).toList(),
                 ),
               ),
-            ),
-            const Divider(height: 1, color: Color(0xFFE2E8F0)),
+              const SizedBox(height: 14),
 
-            // Users List
-            Expanded(
-              child: list.isEmpty
-                  ? const Center(child: Text('Tidak ada akun pada filter ini.', style: TextStyle(color: Color(0xFF94A3B8))))
-                  : ListView.separated(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: list.length,
-                      separatorBuilder: (context, index) => const SizedBox(height: 10),
-                      itemBuilder: (context, index) {
-                        final u = list[index];
-                        final roleColor = _getRoleColor(u.role);
+              // Users List Section
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Daftar Akun Tim Operasional', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                  Text('${list.length} Akun Terdaftar', style: const TextStyle(fontSize: 11, color: Color(0xFF64748B))),
+                ],
+              ),
+              const SizedBox(height: 10),
 
-                        return Container(
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: const Color(0xFFE2E8F0)),
+              if (list.isEmpty)
+                const AppEmptyStateCard(
+                  icon: Icons.person_off_outlined,
+                  title: 'Tidak Ada Akun Pengguna',
+                  message: 'Tidak ditemukan akun tim yang sesuai dengan kata kunci pencarian atau peran ini.',
+                )
+              else
+                ListView.separated(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: list.length,
+                  separatorBuilder: (context, index) => const SizedBox(height: 10),
+                  itemBuilder: (context, index) {
+                    final u = list[index];
+                    final roleColor = _getRoleColor(u.role);
+                    final roleBg = _getRoleBgColor(u.role);
+
+                    return Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFFE2E8F0)),
+                      ),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 20,
+                            backgroundColor: roleBg,
+                            child: Text(
+                              u.name.isNotEmpty ? u.name[0].toUpperCase() : 'U',
+                              style: TextStyle(fontWeight: FontWeight.bold, color: roleColor, fontSize: 15),
+                            ),
                           ),
-                          child: Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 20,
-                                backgroundColor: roleColor.withValues(alpha: 0.1),
-                                child: Text(
-                                  u.name.isNotEmpty ? u.name[0].toUpperCase() : 'U',
-                                  style: TextStyle(fontWeight: FontWeight.bold, color: roleColor),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
                                   children: [
-                                    Text(
-                                      u.name,
-                                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      '@${u.username} · ${u.email}',
-                                      style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                      decoration: BoxDecoration(
-                                        color: roleColor.withValues(alpha: 0.1),
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
+                                    Expanded(
                                       child: Text(
-                                        _getRoleLabel(u.role),
-                                        style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: roleColor),
+                                        u.name,
+                                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Container(
+                                      width: 7,
+                                      height: 7,
+                                      decoration: const BoxDecoration(
+                                        color: Color(0xFF10B981),
+                                        shape: BoxShape.circle,
                                       ),
                                     ),
                                   ],
                                 ),
-                              ),
-                              Container(
-                                width: 8,
-                                height: 8,
-                                decoration: const BoxDecoration(
-                                  color: Color(0xFF10B981),
-                                  shape: BoxShape.circle,
+                                const SizedBox(height: 2),
+                                Text(
+                                  '@${u.username} • ${u.email}',
+                                  style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                              ),
-                            ],
+                                const SizedBox(height: 6),
+                                AppBadge(
+                                  text: _getRoleLabel(u.role),
+                                  textColor: roleColor,
+                                  backgroundColor: roleBg,
+                                  fontSize: 10,
+                                ),
+                              ],
+                            ),
                           ),
-                        );
-                      },
-                    ),
-            ),
-          ],
+                        ],
+                      ),
+                    );
+                  },
+                ),
+            ],
+          ),
         ),
       ),
     );

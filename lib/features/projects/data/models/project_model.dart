@@ -13,6 +13,9 @@ class ProjectModel extends ProjectEntity {
     required super.progress,
     required super.status,
     required super.manager,
+    super.description,
+    super.startDate,
+    super.endDate,
     super.completedDocsCount,
   });
 
@@ -29,6 +32,7 @@ class ProjectModel extends ProjectEntity {
       progress: 45.0,
       status: 'aktif',
       manager: 'Andi Wijaya, ST',
+      startDate: '10 Jan 2026',
       completedDocsCount: 5,
     ),
     ProjectModel(
@@ -43,6 +47,7 @@ class ProjectModel extends ProjectEntity {
       progress: 68.0,
       status: 'aktif',
       manager: 'Ir. Budi Santoso',
+      startDate: '15 Feb 2026',
       completedDocsCount: 4,
     ),
     ProjectModel(
@@ -57,6 +62,7 @@ class ProjectModel extends ProjectEntity {
       progress: 32.0,
       status: 'aktif',
       manager: 'Andi Wijaya, ST',
+      startDate: '01 Mar 2026',
       completedDocsCount: 4,
     ),
     ProjectModel(
@@ -71,6 +77,7 @@ class ProjectModel extends ProjectEntity {
       progress: 55.0,
       status: 'aktif',
       manager: 'Andi Wijaya, ST',
+      startDate: '01 Oct 2025',
       completedDocsCount: 5,
     ),
     ProjectModel(
@@ -85,6 +92,7 @@ class ProjectModel extends ProjectEntity {
       progress: 100.0,
       status: 'selesai',
       manager: 'Ir. Budi Santoso',
+      startDate: '01 Jul 2025',
       completedDocsCount: 5,
     ),
     ProjectModel(
@@ -99,6 +107,7 @@ class ProjectModel extends ProjectEntity {
       progress: 5.0,
       status: 'perencanaan',
       manager: 'Ir. Budi Santoso',
+      startDate: '01 Jun 2026',
       completedDocsCount: 3,
     ),
     ProjectModel(
@@ -113,20 +122,22 @@ class ProjectModel extends ProjectEntity {
       progress: 72.0,
       status: 'aktif',
       manager: 'Andi Wijaya, ST',
+      startDate: '15 Nov 2025',
       completedDocsCount: 4,
     ),
     ProjectModel(
       id: 8,
       code: 'P008',
-      name: 'Pekerjaan Saluran Drainase Kawasan',
-      location: 'Cikarang',
+      name: 'Infrastruktur Jalan Tol Serpong',
+      location: 'Tangerang',
       clientName: 'Kawasan Industri Jababeka',
-      contractValue: 6000000000,
-      budget: 5200000000,
+      contractValue: 50000000000,
+      budget: 45000000000,
       spent: 120000000,
-      progress: 2.0,
+      progress: 20.0,
       status: 'tertunda',
-      manager: 'Andi Wijaya, ST',
+      manager: 'Ir. Budi Santoso',
+      startDate: '01 Aug 2025',
       completedDocsCount: 2,
     ),
   ];

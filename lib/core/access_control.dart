@@ -44,22 +44,6 @@ class AccessControl {
   static const Map<String, Set<String>> rolePermissions = {
     'owner': _allPermissions,
     'admin': _allPermissions,
-    'administrasi': {
-      AppPermissions.dashboardView,
-      AppPermissions.clientsView,
-      AppPermissions.projectsView,
-      AppPermissions.documentsView,
-      AppPermissions.reportsView,
-      AppPermissions.reportsExport,
-    },
-    'konsultan': {
-      AppPermissions.dashboardView,
-      AppPermissions.projectsView,
-      AppPermissions.progressView,
-      AppPermissions.documentsView,
-      AppPermissions.reportsView,
-      AppPermissions.siteSurveysView,
-    },
     'pengawas': {
       AppPermissions.dashboardView,
       AppPermissions.projectsView,
@@ -80,10 +64,13 @@ class AccessControl {
       AppPermissions.documentsView,
       AppPermissions.reportsView,
     },
-    'marketing': {
+    'pelaksana': {
       AppPermissions.dashboardView,
-      AppPermissions.clientsView,
       AppPermissions.projectsView,
+      AppPermissions.progressView,
+      AppPermissions.materialsView,
+      AppPermissions.materialRequestsView,
+      AppPermissions.equipmentsView,
       AppPermissions.documentsView,
       AppPermissions.reportsView,
     },

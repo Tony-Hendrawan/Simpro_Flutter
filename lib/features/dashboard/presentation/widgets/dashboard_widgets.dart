@@ -32,19 +32,71 @@ class _DashboardQuickActionsState extends State<DashboardQuickActions> {
   bool _showAll = false;
 
   static const List<_MenuItem> _allItems = [
-    _MenuItem(title: 'Klien & Vendor', icon: Icons.people_alt_outlined, permission: AppPermissions.clientsView),
-    _MenuItem(title: 'Survei Lokasi', icon: Icons.pin_drop_outlined, permission: AppPermissions.siteSurveysView),
-    _MenuItem(title: 'Validasi Survei', icon: Icons.fact_check_outlined, permission: AppPermissions.siteSurveysApprove),
-    _MenuItem(title: 'Daftar Proyek', icon: Icons.format_list_bulleted_rounded, permission: AppPermissions.projectsView),
-    _MenuItem(title: 'Laporan Pengerjaan Proyek', icon: Icons.description_outlined, permission: AppPermissions.progressView),
-    _MenuItem(title: 'Logistik & Material', icon: Icons.inventory_2_outlined, permission: AppPermissions.materialsView),
-    _MenuItem(title: 'Pengajuan Material', icon: Icons.shopping_bag_outlined, permission: AppPermissions.materialRequestsView),
-    _MenuItem(title: 'Alat Berat & Aset', icon: Icons.local_shipping_outlined, permission: AppPermissions.equipmentsView),
-    _MenuItem(title: 'Keuangan Proyek', icon: Icons.account_balance_wallet_outlined, permission: AppPermissions.financeView),
-    _MenuItem(title: 'Dokumen Proyek', icon: Icons.folder_outlined, permission: AppPermissions.documentsView),
-    _MenuItem(title: 'Generate Laporan', icon: Icons.print_outlined, permission: AppPermissions.reportsExport),
-    _MenuItem(title: 'Kelola User', icon: Icons.manage_accounts_outlined, permission: AppPermissions.usersView),
-    _MenuItem(title: 'Pengaturan Sistem', icon: Icons.settings_outlined, permission: AppPermissions.settingsView),
+    _MenuItem(
+      title: 'Klien & Vendor',
+      icon: Icons.people_alt_outlined,
+      permission: AppPermissions.clientsView,
+    ),
+    _MenuItem(
+      title: 'Survei Lokasi',
+      icon: Icons.pin_drop_outlined,
+      permission: AppPermissions.siteSurveysView,
+    ),
+    _MenuItem(
+      title: 'Validasi Survei',
+      icon: Icons.fact_check_outlined,
+      permission: AppPermissions.siteSurveysApprove,
+    ),
+    _MenuItem(
+      title: 'Daftar Proyek',
+      icon: Icons.format_list_bulleted_rounded,
+      permission: AppPermissions.projectsView,
+    ),
+    _MenuItem(
+      title: 'Laporan Pengerjaan Proyek',
+      icon: Icons.description_outlined,
+      permission: AppPermissions.progressView,
+    ),
+    _MenuItem(
+      title: 'Logistik & Material',
+      icon: Icons.inventory_2_outlined,
+      permission: AppPermissions.materialsView,
+    ),
+    _MenuItem(
+      title: 'Pengajuan Material',
+      icon: Icons.shopping_bag_outlined,
+      permission: AppPermissions.materialRequestsView,
+    ),
+    _MenuItem(
+      title: 'Alat Berat & Aset',
+      icon: Icons.local_shipping_outlined,
+      permission: AppPermissions.equipmentsView,
+    ),
+    _MenuItem(
+      title: 'Keuangan Proyek',
+      icon: Icons.account_balance_wallet_outlined,
+      permission: AppPermissions.financeView,
+    ),
+    _MenuItem(
+      title: 'Dokumen Proyek',
+      icon: Icons.folder_outlined,
+      permission: AppPermissions.documentsView,
+    ),
+    _MenuItem(
+      title: 'Generate Laporan',
+      icon: Icons.print_outlined,
+      permission: AppPermissions.reportsExport,
+    ),
+    _MenuItem(
+      title: 'Kelola User',
+      icon: Icons.manage_accounts_outlined,
+      permission: AppPermissions.usersView,
+    ),
+    _MenuItem(
+      title: 'Pengaturan Sistem',
+      icon: Icons.settings_outlined,
+      permission: AppPermissions.settingsView,
+    ),
   ];
 
   List<_MenuItem> get _visibleItems {
@@ -60,7 +112,10 @@ class _DashboardQuickActionsState extends State<DashboardQuickActions> {
     final initialItems = permittedItems.take(7).toList();
     return [
       ...initialItems,
-      const _MenuItem(title: 'Tampilkan Semua', icon: Icons.expand_more_rounded),
+      const _MenuItem(
+        title: 'Tampilkan Semua',
+        icon: Icons.expand_more_rounded,
+      ),
     ];
   }
 
@@ -126,13 +181,8 @@ class _DashboardQuickActionsState extends State<DashboardQuickActions> {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Menu ${item.title} sedang dalam pengembangan'),
-        duration: const Duration(seconds: 1),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    // Unknown entries are intentionally ignored rather than presenting a
+    // development-only action to users.
   }
 
   @override
@@ -174,11 +224,7 @@ class _DashboardQuickActionsState extends State<DashboardQuickActions> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      item.icon,
-                      size: 28,
-                      color: const Color(0xFF1D4ED8),
-                    ),
+                    Icon(item.icon, size: 28, color: const Color(0xFF1D4ED8)),
                     const SizedBox(height: 8),
                     Text(
                       item.title,

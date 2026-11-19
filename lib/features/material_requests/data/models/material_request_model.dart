@@ -24,7 +24,7 @@ class MaterialRequestModel extends MaterialRequestEntity {
       unit: 'Sak',
       estimatedCost: 13600000,
       status: 'pending',
-      requestedBy: 'Andi Wijaya, ST',
+      requestedBy: 'Andi Wijaya, ST (Pengawas Lapangan)',
       date: '02 Nov 2026',
     ),
     MaterialRequestModel(
@@ -36,7 +36,7 @@ class MaterialRequestModel extends MaterialRequestEntity {
       unit: 'Batang',
       estimatedCost: 57500000,
       status: 'approved',
-      requestedBy: 'Pengawas Lapangan',
+      requestedBy: 'Agus Setiawan (Staf Logistik)',
       date: '30 Okt 2026',
     ),
     MaterialRequestModel(
@@ -48,7 +48,7 @@ class MaterialRequestModel extends MaterialRequestEntity {
       unit: 'M3',
       estimatedCost: 24800000,
       status: 'delivered',
-      requestedBy: 'Andi Wijaya, ST',
+      requestedBy: 'Andi Wijaya, ST (Pengawas Lapangan)',
       date: '24 Okt 2026',
     ),
     MaterialRequestModel(
@@ -60,7 +60,7 @@ class MaterialRequestModel extends MaterialRequestEntity {
       unit: 'Galon',
       estimatedCost: 17400000,
       status: 'rejected',
-      requestedBy: 'Ir. Budi Santoso',
+      requestedBy: 'Ir. H. Hendra Wijaya (Owner)',
       date: '18 Okt 2026',
     ),
   ];

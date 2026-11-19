@@ -10,6 +10,7 @@ import 'features/material_requests/presentation/pages/material_requests_page.dar
 import 'features/materials/presentation/pages/materials_page.dart';
 import 'features/profile/presentation/pages/profile_page.dart';
 import 'features/progress/presentation/pages/progress_report_page.dart';
+import 'features/progress/presentation/pages/progress_history_page.dart';
 import 'features/projects/presentation/pages/projects_page.dart';
 import 'features/reports/presentation/pages/reports_export_page.dart';
 import 'features/reports/presentation/pages/statistics_page.dart';
@@ -72,6 +73,10 @@ class SimproApp extends StatelessWidget {
           permission: AppPermissions.progressView,
           child: ProgressReportPage(),
         ),
+        ProgressHistoryPage.routeName: (_) => const PermissionGuard(
+          permission: AppPermissions.progressView,
+          child: ProgressHistoryPage(),
+        ),
         MaterialsPage.routeName: (_) => const PermissionGuard(
           permission: AppPermissions.materialsView,
           child: MaterialsPage(),
@@ -96,7 +101,7 @@ class SimproApp extends StatelessWidget {
           permission: AppPermissions.reportsExport,
           child: ReportsExportPage(),
         ),
-        UsersManagementPage.routeName: (_) => const PermissionGuard(
+        UsersManagementPage.routeName: (_) => PermissionGuard(
           permission: AppPermissions.usersView,
           child: UsersManagementPage(),
         ),

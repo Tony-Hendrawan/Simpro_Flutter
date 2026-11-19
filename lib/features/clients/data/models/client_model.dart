@@ -8,6 +8,9 @@ class ClientModel extends ClientEntity {
     required super.phone,
     required super.address,
     required super.category,
+    super.contactPerson,
+    super.status,
+    super.company,
   });
 
   factory ClientModel.fromJson(Map<String, dynamic> json) {
@@ -18,6 +21,9 @@ class ClientModel extends ClientEntity {
       phone: json['phone'] as String? ?? '',
       address: json['address'] as String? ?? '',
       category: json['category'] as String? ?? 'Klien',
+      contactPerson: json['contact_person'] as String? ?? '',
+      status: json['status'] as String? ?? 'aktif',
+      company: json['company'] as String? ?? '',
     );
   }
 
@@ -29,6 +35,9 @@ class ClientModel extends ClientEntity {
       'phone': phone,
       'address': address,
       'category': category,
+      'contact_person': contactPerson,
+      'status': status,
+      'company': company,
     };
   }
 

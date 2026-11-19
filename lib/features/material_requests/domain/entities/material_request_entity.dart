@@ -9,6 +9,8 @@ class MaterialRequestEntity {
   final String status; // 'pending', 'approved', 'delivered', 'rejected'
   final String requestedBy;
   final String date;
+  final String? approvedBy;
+  final String? notes;
 
   const MaterialRequestEntity({
     required this.id,
@@ -21,5 +23,7 @@ class MaterialRequestEntity {
     required this.status,
     required this.requestedBy,
     required this.date,
+    this.approvedBy,
+    this.notes,
   });
 }

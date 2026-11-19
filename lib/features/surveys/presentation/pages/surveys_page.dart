@@ -1,6 +1,8 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import '../../data/models/survey_model.dart';
 import '../../domain/entities/survey_entity.dart';
+import '../../../projects/data/models/project_model.dart';
+import '../../../../core/widgets/summary_widgets.dart';
 
 class SurveysPage extends StatefulWidget {
   const SurveysPage({super.key});
@@ -12,304 +14,48 @@ class SurveysPage extends StatefulWidget {
 }
 
 class _SurveysPageState extends State<SurveysPage> {
-  final List<SurveyEntity> _surveys = List.from(SurveyModel.mockSurveys);
+  final List<SurveyEntity> _surveys = [];
   String _selectedStatus = 'Semua Status';
 
   List<SurveyEntity> get _filteredSurveys {
     if (_selectedStatus == 'Semua Status') return _surveys;
-    return _surveys.where((s) => s.status == _selectedStatus.toLowerCase()).toList();
+    return _surveys
+        .where((survey) => survey.status == _selectedStatus.toLowerCase())
+        .toList();
   }
 
-  void _showAddSurveyDialog() {
-    final codeController = TextEditingController(text: 'SRV-2026-00${_surveys.length + 1}');
-    final projectController = TextEditingController();
-    final surveyorController = TextEditingController();
-    final areaController = TextEditingController(text: '1.5');
-    final elevationController = TextEditingController(text: '25.0');
-    String soilType = 'Tanah Lempung/Liat';
-    String contour = 'Datar';
-    final accessController = TextEditingController(text: 'Akses jalan aspal dapat dilalui truk mixer & tronton');
-    final notesController = TextEditingController();
+  String _statusLabel(String status) => switch (status) {
+    'pending' => 'Pending (Diajukan)',
+    'review' => 'Review (Sedang Ditinjau)',
+    'approved' => 'Approved (Disetujui)',
+    'rejected' => 'Rejected (Ditolak)',
+    _ => status,
+  };
 
-    showModalBottomSheet(
+  Future<void> _showAddSurveyDialog() async {
+    final result = await showDialog<SurveyEntity>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setModalState) => Padding(
-          padding: EdgeInsets.only(
-            left: 20,
-            right: 20,
-            top: 20,
-            bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Buat Laporan Survei Lokasi',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close_rounded),
-                      onPressed: () => Navigator.pop(ctx),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                const Text('Kode Survei', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
-                const SizedBox(height: 6),
-                TextField(
-                  controller: codeController,
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                const Text('Nama Proyek Terkait', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
-                const SizedBox(height: 6),
-                TextField(
-                  controller: projectController,
-                  decoration: InputDecoration(
-                    hintText: 'Contoh: Pembangunan Kantor Baru',
-                    hintStyle: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                const Text('Petugas / Surveyor', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
-                const SizedBox(height: 6),
-                TextField(
-                  controller: surveyorController,
-                  decoration: InputDecoration(
-                    hintText: 'Nama lengkap surveyor',
-                    hintStyle: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Luas Tanah (Ha)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
-                          const SizedBox(height: 6),
-                          TextField(
-                            controller: areaController,
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                            decoration: InputDecoration(
-                              suffixText: 'Ha',
-                              hintText: '1.5',
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Ketinggian (mdpl)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
-                          const SizedBox(height: 6),
-                          TextField(
-                            controller: elevationController,
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                            decoration: InputDecoration(
-                              suffixText: 'mdpl',
-                              hintText: '25.0',
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Jenis Tanah', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
-                          const SizedBox(height: 6),
-                          DropdownButtonFormField<String>(
-                            initialValue: soilType,
-                            isExpanded: true,
-                            decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                            ),
-                            items: const [
-                              DropdownMenuItem(value: 'Tanah Lempung/Liat', child: Text('Lempung/Liat', style: TextStyle(fontSize: 12))),
-                              DropdownMenuItem(value: 'Tanah Keras/Padas', child: Text('Keras/Padas', style: TextStyle(fontSize: 12))),
-                              DropdownMenuItem(value: 'Tanah Berpasir', child: Text('Berpasir', style: TextStyle(fontSize: 12))),
-                              DropdownMenuItem(value: 'Tanah Gambut', child: Text('Gambut', style: TextStyle(fontSize: 12))),
-                            ],
-                            onChanged: (v) => setModalState(() => soilType = v ?? soilType),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Permukaan / Kontur', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
-                          const SizedBox(height: 6),
-                          DropdownButtonFormField<String>(
-                            initialValue: contour,
-                            isExpanded: true,
-                            decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                            ),
-                            items: const [
-                              DropdownMenuItem(value: 'Datar', child: Text('Datar', style: TextStyle(fontSize: 12))),
-                              DropdownMenuItem(value: 'Bergelombang', child: Text('Bergelombang', style: TextStyle(fontSize: 12))),
-                              DropdownMenuItem(value: 'Miring/Berbukit', child: Text('Miring/Berbukit', style: TextStyle(fontSize: 12))),
-                            ],
-                            onChanged: (v) => setModalState(() => contour = v ?? contour),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                const Text('Aksesibilitas / Kondisi Jalan', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
-                const SizedBox(height: 6),
-                TextField(
-                  controller: accessController,
-                  maxLines: 2,
-                  decoration: InputDecoration(
-                    hintText: 'Akses truk / kendaraan berat ke lokasi...',
-                    hintStyle: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                const Text('Catatan & Rekomendasi Teknis', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
-                const SizedBox(height: 6),
-                TextField(
-                  controller: notesController,
-                  maxLines: 2,
-                  decoration: InputDecoration(
-                    hintText: 'Catatan penting saat survei lapangan...',
-                    hintStyle: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                // Lampiran Dokumentasi Foto (Kebijakan Validasi Lapangan)
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF8FAFC),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
-                  ),
-                  child: Row(
-                    children: const [
-                      Icon(Icons.add_a_photo_outlined, size: 20, color: Color(0xFF1D4ED8)),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Lampiran Foto Lapangan (Wajib)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
-                            Text('Kamera / Galeri terhubung (2 foto terpilih)', style: TextStyle(fontSize: 10, color: Color(0xFF64748B))),
-                          ],
-                        ),
-                      ),
-                      Icon(Icons.check_circle, size: 18, color: Color(0xFF059669)),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (projectController.text.trim().isEmpty) return;
-                      final area = double.tryParse(areaController.text.trim());
-                      final elev = double.tryParse(elevationController.text.trim());
+      barrierColor: const Color(0x730F172A),
+      builder: (_) => const _SurveyWizardDialog(),
+    );
 
-                      setState(() {
-                        _surveys.insert(
-                          0,
-                          SurveyEntity(
-                            id: DateTime.now().millisecondsSinceEpoch,
-                            surveyCode: codeController.text.trim(),
-                            projectName: projectController.text.trim(),
-                            surveyorName: surveyorController.text.trim().isNotEmpty
-                                ? surveyorController.text.trim()
-                                : 'Andi Wijaya, ST',
-                            surveyDate: 'Hari ini',
-                            landCondition: '$contour, $soilType',
-                            status: 'pending',
-                            notes: notesController.text.trim(),
-                            areaSize: area,
-                            elevation: elev,
-                            soilType: soilType,
-                            contour: contour,
-                            accessibility: accessController.text.trim(),
-                          ),
-                        );
-                      });
-                      Navigator.pop(ctx);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Laporan survei lokasi baru berhasil dibuat!'),
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1D4ED8),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    ),
-                    child: const Text('SUBMIT LAPORAN SURVEI', style: TextStyle(fontWeight: FontWeight.bold)),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+    if (result == null || !mounted) return;
+    setState(() => _surveys.insert(0, result));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Laporan survei lokasi berhasil dibuat.'),
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final total = _surveys.length;
+    final list = _filteredSurveys;
     final pending = _surveys.where((s) => s.status == 'pending').length;
     final review = _surveys.where((s) => s.status == 'review').length;
     final approved = _surveys.where((s) => s.status == 'approved').length;
-    final list = _filteredSurveys;
+    final rejected = _surveys.where((s) => s.status == 'rejected').length;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -318,249 +64,88 @@ class _SurveysPageState extends State<SurveysPage> {
         elevation: 0,
         surfaceTintColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF0F172A), size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Color(0xFF0F172A),
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Survei Lokasi',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF0F172A),
+          ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.add_location_alt_rounded,
+              color: Color(0xFF1D4ED8),
+            ),
+            tooltip: 'Tambah laporan survei',
+            onPressed: _showAddSurveyDialog,
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
           child: Container(color: const Color(0xFFE2E8F0), height: 1),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add_location_alt_rounded, color: Color(0xFF1D4ED8)),
-            tooltip: 'Buat Survei',
-            onPressed: _showAddSurveyDialog,
-          ),
-        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Stat Cards Grid
-              Row(
-                children: [
-                  Expanded(child: _buildStatItem('Total Survei', '$total', const Color(0xFF1D4ED8))),
-                  const SizedBox(width: 8),
-                  Expanded(child: _buildStatItem('Pending', '$pending', const Color(0xFFF59E0B))),
-                  const SizedBox(width: 8),
-                  Expanded(child: _buildStatItem('Review', '$review', const Color(0xFF3B82F6))),
-                  const SizedBox(width: 8),
-                  Expanded(child: _buildStatItem('Disetujui', '$approved', const Color(0xFF10B981))),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Filter Status Chips
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: ['Semua Status', 'Pending', 'Review', 'Approved', 'Rejected'].map((st) {
-                    final isSel = _selectedStatus == st;
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: ChoiceChip(
-                        label: Text(st),
-                        labelStyle: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: isSel ? Colors.white : const Color(0xFF475569),
-                        ),
-                        selected: isSel,
-                        selectedColor: const Color(0xFF1D4ED8),
-                        backgroundColor: Colors.white,
-                        onSelected: (_) => setState(() => _selectedStatus = st),
-                      ),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  if (constraints.maxWidth >= 700) {
+                    return _desktopStats(
+                      total: _surveys.length,
+                      pending: pending,
+                      review: review,
+                      approved: approved,
+                      rejected: rejected,
                     );
-                  }).toList(),
-                ),
-              ),
-              const SizedBox(height: 14),
-
-              // Surveys List
-              ListView.separated(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: list.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 12),
-                itemBuilder: (context, index) {
-                  final s = list[index];
-                  final isAppr = s.status == 'approved';
-                  final isPend = s.status == 'pending';
-                  final isRev = s.status == 'review';
-                  final badgeColor = isAppr
-                      ? const Color(0xFF059669)
-                      : (isPend ? const Color(0xFFD97706) : (isRev ? const Color(0xFF2563EB) : const Color(0xFFE11D48)));
-                  final badgeBg = isAppr
-                      ? const Color(0xFFECFDF5)
-                      : (isPend ? const Color(0xFFFFFBEB) : (isRev ? const Color(0xFFEFF6FF) : const Color(0xFFFFF1F2)));
-
-                  return Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              s.surveyCode,
-                              style: const TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF94A3B8),
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                              decoration: BoxDecoration(
-                                color: badgeBg,
-                                borderRadius: BorderRadius.circular(6),
-                                border: Border.all(color: badgeColor.withValues(alpha: 0.3)),
-                              ),
-                              child: Text(
-                                s.status.toUpperCase(),
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: badgeColor,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          s.projectName,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF0F172A),
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            const Icon(Icons.person_outline_rounded, size: 14, color: Color(0xFF64748B)),
-                            const SizedBox(width: 4),
-                            Text(s.surveyorName, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
-                            const SizedBox(width: 12),
-                            const Icon(Icons.calendar_today_outlined, size: 14, color: Color(0xFF64748B)),
-                            const SizedBox(width: 4),
-                            Text(s.surveyDate, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF8FAFC),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: const Color(0xFFE2E8F0)),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Row(
-                                      children: [
-                                        const Icon(Icons.square_foot_rounded, size: 14, color: Color(0xFF1D4ED8)),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          'Luas: ${s.areaSize != null ? '${s.areaSize} Ha' : '-'}',
-                                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Row(
-                                      children: [
-                                        const Icon(Icons.terrain_rounded, size: 14, color: Color(0xFF059669)),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          'Elevasi: ${s.elevation != null ? '${s.elevation} mdpl' : '-'}',
-                                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              if (s.soilType != null || s.contour != null) ...[
-                                const SizedBox(height: 6),
-                                Text(
-                                  'Tanah: ${s.soilType ?? '-'} · Kontur: ${s.contour ?? '-'}',
-                                  style: const TextStyle(fontSize: 11, color: Color(0xFF475569)),
-                                ),
-                              ],
-                              if (s.accessibility != null && s.accessibility!.isNotEmpty) ...[
-                                const SizedBox(height: 4),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Icon(Icons.alt_route_rounded, size: 13, color: Color(0xFF94A3B8)),
-                                    const SizedBox(width: 4),
-                                    Expanded(
-                                      child: Text(
-                                        s.accessibility!,
-                                        style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                s.notes.isNotEmpty ? 'Catatan: ${s.notes}' : 'Kondisi: ${s.landCondition}',
-                                style: const TextStyle(fontSize: 11, color: Color(0xFF64748B), fontStyle: FontStyle.italic),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFEFF6FF),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Row(
-                                children: const [
-                                  Icon(Icons.photo_camera_back_outlined, size: 10, color: Color(0xFF1D4ED8)),
-                                  SizedBox(width: 4),
-                                  Text('2 Foto', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Color(0xFF1D4ED8))),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                  }
+                  return _summaryCard(
+                    total: _surveys.length,
+                    pending: pending,
+                    review: review,
+                    approved: approved,
+                    rejected: rejected,
                   );
                 },
               ),
+              const SizedBox(height: 16),
+              AppFilterDropdown<String>(
+                value: _selectedStatus,
+                entries: const [
+                  DropdownMenuEntry(
+                    value: 'Semua Status',
+                    label: 'Semua Status',
+                  ),
+                  DropdownMenuEntry(value: 'Pending', label: 'Pengajuan'),
+                  DropdownMenuEntry(value: 'Review', label: 'Ditinjau'),
+                  DropdownMenuEntry(value: 'Approved', label: 'Disetujui'),
+                  DropdownMenuEntry(value: 'Rejected', label: 'Perlu Revisi'),
+                ],
+                onSelected: (value) =>
+                    setState(() => _selectedStatus = value ?? 'Semua Status'),
+              ),
+              const SizedBox(height: 14),
+              if (list.isEmpty)
+                const AppEmptyStateCard(
+                  icon: Icons.map_outlined,
+                  title: 'Belum Ada Laporan Survei',
+                  message:
+                      'Klik tombol tambah untuk membuat laporan survei lokasi.',
+                )
+              else
+                ...list.map(_surveyCard),
             ],
           ),
         ),
@@ -568,21 +153,720 @@ class _SurveysPageState extends State<SurveysPage> {
     );
   }
 
-  Widget _buildStatItem(String title, String val, Color color) {
+  Widget _summaryCard({
+    required int total,
+    required int pending,
+    required int review,
+    required int approved,
+    required int rejected,
+  }) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontSize: 10, color: Color(0xFF64748B), fontWeight: FontWeight.w600)),
-          const SizedBox(height: 4),
-          Text(val, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: color)),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEFF6FF),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.assignment_outlined,
+                  size: 20,
+                  color: Color(0xFF1D4ED8),
+                ),
+              ),
+              const SizedBox(width: 10),
+              const Expanded(
+                child: Text(
+                  'Total Laporan',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF64748B),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Text(
+                '$total',
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1D4ED8),
+                ),
+              ),
+            ],
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 12),
+            child: Divider(height: 1, color: Color(0xFFE2E8F0)),
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: AppStatusMetricBox(
+                  label: 'Pengajuan',
+                  value: pending,
+                  indicatorColor: const Color(0xFFF59E0B),
+                ),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: AppStatusMetricBox(
+                  label: 'Ditinjau',
+                  value: review,
+                  indicatorColor: const Color(0xFF2563EB),
+                ),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: AppStatusMetricBox(
+                  label: 'Disetujui',
+                  value: approved,
+                  indicatorColor: const Color(0xFF059669),
+                ),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: AppStatusMetricBox(
+                  label: 'Perlu Revisi',
+                  value: rejected,
+                  indicatorColor: const Color(0xFFE11D48),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
+
+  Widget _desktopStats({
+    required int total,
+    required int pending,
+    required int review,
+    required int approved,
+    required int rejected,
+  }) => Row(
+    children: [
+      Expanded(
+        child: AppMetricCard(
+          title: 'Total Laporan',
+          value: '$total',
+          accentColor: const Color(0xFF1D4ED8),
+        ),
+      ),
+      const SizedBox(width: 8),
+      Expanded(
+        child: AppMetricCard(
+          title: 'Pengajuan Baru',
+          value: '$pending',
+          accentColor: const Color(0xFFF59E0B),
+        ),
+      ),
+      const SizedBox(width: 8),
+      Expanded(
+        child: AppMetricCard(
+          title: 'Dalam Peninjauan',
+          value: '$review',
+          accentColor: const Color(0xFF2563EB),
+        ),
+      ),
+      const SizedBox(width: 8),
+      Expanded(
+        child: AppMetricCard(
+          title: 'Disetujui',
+          value: '$approved',
+          accentColor: const Color(0xFF059669),
+        ),
+      ),
+      const SizedBox(width: 8),
+      Expanded(
+        child: AppMetricCard(
+          title: 'Perlu Revisi',
+          value: '$rejected',
+          accentColor: const Color(0xFFE11D48),
+        ),
+      ),
+    ],
+  );
+
+  Widget _surveyCard(SurveyEntity survey) => Container(
+    margin: const EdgeInsets.only(bottom: 12),
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: const Color(0xFFE2E8F0)),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              survey.surveyCode,
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF94A3B8),
+              ),
+            ),
+            Text(
+              _statusLabel(survey.status),
+              style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFD97706),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Text(
+          survey.projectName,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF0F172A),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          '${survey.surveyorName} · ${survey.surveyDate}',
+          style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+        ),
+      ],
+    ),
+  );
+}
+
+class _SurveyWizardDialog extends StatefulWidget {
+  const _SurveyWizardDialog();
+
+  @override
+  State<_SurveyWizardDialog> createState() => _SurveyWizardDialogState();
+}
+
+class _SurveyWizardDialogState extends State<_SurveyWizardDialog> {
+  int _step = 1;
+  String? _projectName;
+  final _newProjectController = TextEditingController();
+  final _areaController = TextEditingController();
+  final _elevationController = TextEditingController();
+  final _soilController = TextEditingController();
+  final _contourController = TextEditingController();
+  final _accessController = TextEditingController();
+  final List<PlatformFile> _files = [];
+
+  @override
+  void dispose() {
+    _newProjectController.dispose();
+    _areaController.dispose();
+    _elevationController.dispose();
+    _soilController.dispose();
+    _contourController.dispose();
+    _accessController.dispose();
+    super.dispose();
+  }
+
+  void _next() {
+    if (_step == 1 &&
+        (_projectName == null && _newProjectController.text.trim().isEmpty)) {
+      _message('Pilih proyek atau isi nama proyek baru.');
+      return;
+    }
+    if (_step < 3) setState(() => _step++);
+  }
+
+  void _message(String message) => ScaffoldMessenger.of(
+    context,
+  ).showSnackBar(SnackBar(content: Text(message)));
+
+  Future<void> _pickFiles() async {
+    final result = await FilePicker.platform.pickFiles(
+      allowMultiple: true,
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf', 'docx'],
+    );
+    if (result == null) return;
+    setState(
+      () => _files
+        ..clear()
+        ..addAll(result.files.take(10)),
+    );
+  }
+
+  void _submit() {
+    final project = _projectName ?? _newProjectController.text.trim();
+    Navigator.pop(
+      context,
+      SurveyEntity(
+        id: DateTime.now().millisecondsSinceEpoch,
+        surveyCode: 'SRV-${DateTime.now().year}-${DateTime.now().millisecond}',
+        projectName: project,
+        surveyorName: 'Tim Lapangan',
+        surveyDate: 'Hari ini',
+        landCondition: _contourController.text.trim(),
+        status: 'pending',
+        notes: _accessController.text.trim(),
+        areaSize: double.tryParse(_areaController.text),
+        elevation: double.tryParse(_elevationController.text),
+        soilType: _soilController.text.trim(),
+        contour: _contourController.text.trim(),
+        accessibility: _accessController.text.trim(),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      clipBehavior: Clip.antiAlias,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 680, maxHeight: 700),
+        child: Column(
+          children: [
+            _header(),
+            _stepper(),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+                child: _stepContent(),
+              ),
+            ),
+            _footer(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _header() => Padding(
+    padding: const EdgeInsets.fromLTRB(24, 18, 14, 18),
+    child: Row(
+      children: [
+        const Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Formulir Laporan Survei Lokasi',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1E293B),
+                ),
+              ),
+              SizedBox(height: 5),
+              Text(
+                'Pendataan kondisi geoteknik dan fisik lahan untuk persetujuan manajemen.',
+                style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
+              ),
+            ],
+          ),
+        ),
+        IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.close, color: Color(0xFF94A3B8)),
+        ),
+      ],
+    ),
+  );
+
+  Widget _stepper() => Container(
+    color: const Color(0xFFF8FAFC),
+    padding: const EdgeInsets.symmetric(horizontal: 34, vertical: 12),
+    child: Row(
+      children: [
+        _stepIndicator(1, 'PROYEK'),
+        _line(1 < _step),
+        _stepIndicator(2, 'FISIK LAHAN'),
+        _line(2 < _step),
+        _stepIndicator(3, 'LAMPIRAN'),
+      ],
+    ),
+  );
+
+  Widget _line(bool active) => Expanded(
+    child: Container(
+      height: 3,
+      color: active ? const Color(0xFF2563EB) : const Color(0xFFE2E8F0),
+    ),
+  );
+
+  Widget _stepIndicator(int number, String label) {
+    final active = number <= _step;
+    return Column(
+      children: [
+        CircleAvatar(
+          radius: 16,
+          backgroundColor: active
+              ? const Color(0xFF2563EB)
+              : const Color(0xFFF8FAFC),
+          child: Text(
+            '$number',
+            style: TextStyle(
+              color: active ? Colors.white : const Color(0xFF94A3B8),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        const SizedBox(height: 5),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.bold,
+            color: active ? const Color(0xFF2563EB) : const Color(0xFF94A3B8),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _stepContent() => switch (_step) {
+    1 => _projectStep(),
+    2 => _physicalStep(),
+    _ => _attachmentStep(),
+  };
+
+  Widget _projectStep() => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      _sectionTitle(
+        'TENTUKAN OBJEK PROYEK',
+        'Pilih proyek konstruksi yang sedang dilakukan survei lapangan.',
+      ),
+      _label('Proyek Terdaftar *'),
+      DropdownButtonFormField<String>(
+        initialValue: _projectName,
+        hint: const Text('— Pilih Proyek Terdaftar —'),
+        isExpanded: true,
+        items: ProjectModel.mockProjects
+            .map(
+              (project) => DropdownMenuItem(
+                value: project.name,
+                child: Text(project.name),
+              ),
+            )
+            .toList(),
+        onChanged: (value) => setState(() => _projectName = value),
+        decoration: _decoration(),
+      ),
+      const SizedBox(height: 28),
+      Row(
+        children: [
+          const Expanded(child: Divider(color: Color(0xFFE2E8F0))),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 14),
+            child: Text('atau', style: TextStyle(color: Color(0xFF94A3B8))),
+          ),
+          const Expanded(child: Divider(color: Color(0xFFE2E8F0))),
+        ],
+      ),
+      const SizedBox(height: 26),
+      _label('Nama Proyek Baru (Jika Belum Terdaftar)'),
+      TextField(
+        controller: _newProjectController,
+        decoration: _decoration(
+          hint: 'Ketik nama proyek jika belum terdaftar di sistem',
+        ),
+      ),
+      const SizedBox(height: 8),
+      const Text(
+        'Proyek baru akan didaftarkan secara otomatis ke dalam sistem.',
+        style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
+      ),
+    ],
+  );
+
+  Widget _physicalStep() => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      _sectionTitle(
+        'KONDISI FISIK & GEOTEKNIK LAHAN',
+        'Lengkapi data pengukuran lahan, kontur tanah, dan elevasi area.',
+      ),
+      Row(
+        children: [
+          Expanded(
+            child: _field(
+              'Luas Area Lahan (Hektar)',
+              _areaController,
+              'Contoh: 1.5',
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: _field(
+              'Elevasi Lahan (mdpl)',
+              _elevationController,
+              'Contoh: 120',
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 18),
+      _label('Jenis Tanah'),
+      TextField(
+        controller: _soilController,
+        decoration: _decoration(hint: 'Contoh: Tanah Lempung Berpasir'),
+      ),
+      _chips(_soilController, [
+        'Tanah Lempung',
+        'Berbatu / Padas',
+        'Tanah Pasir',
+        'Gambut / Rawa',
+      ]),
+      const SizedBox(height: 16),
+      _label('Kontur Permukaan Lahan'),
+      TextField(
+        controller: _contourController,
+        decoration: _decoration(hint: 'Contoh: Datar Landai'),
+      ),
+      _chips(_contourController, [
+        'Datar Rata',
+        'Landai Bergelombang',
+        'Miring / Lereng',
+        'Terasering',
+      ]),
+    ],
+  );
+
+  Widget _attachmentStep() => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      _sectionTitle(
+        'AKSESIBILITAS & DOKUMENTASI',
+        'Catatan jalur akses transportasi dan lampiran foto lokasi.',
+      ),
+      _label('Catatan Aksesibilitas Jalan & Lokasi'),
+      TextField(
+        controller: _accessController,
+        maxLines: 4,
+        decoration: _decoration(
+          hint:
+              'Contoh: Jalan masuk cor beton lebar 4m, truk tronton dapat masuk, suplai listrik dan air tersedia...',
+        ),
+      ),
+      const SizedBox(height: 22),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(child: _label('Berkas Foto & Lampiran (Maksimal 10 File)')),
+          Text(
+            '${_files.length}/10',
+            style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+          ),
+        ],
+      ),
+      const SizedBox(height: 8),
+      InkWell(
+        onTap: _pickFiles,
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 24),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF8FAFC),
+            border: Border.all(
+              color: const Color(0xFFCBD5E1),
+              style: BorderStyle.solid,
+            ),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Column(
+            children: [
+              const Icon(
+                Icons.cloud_upload_outlined,
+                size: 30,
+                color: Color(0xFF94A3B8),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _files.isEmpty
+                    ? 'Pilih Berkas atau Tarik ke Sini'
+                    : '${_files.length} berkas dipilih',
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF475569),
+                ),
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'Format: JPG, PNG, PDF, DOCX (Maksimal 10 file)',
+                style: TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+
+  Widget _sectionTitle(String title, String subtitle) => Padding(
+    padding: const EdgeInsets.only(bottom: 22),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF334155),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          subtitle,
+          style: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
+        ),
+      ],
+    ),
+  );
+
+  Widget _label(String text) => Padding(
+    padding: const EdgeInsets.only(bottom: 8),
+    child: Text(
+      text,
+      style: const TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.bold,
+        color: Color(0xFF64748B),
+      ),
+    ),
+  );
+
+  Widget _field(String label, TextEditingController controller, String hint) =>
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _label(label),
+          TextField(
+            controller: controller,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            decoration: _decoration(hint: hint),
+          ),
+        ],
+      );
+
+  Widget _chips(TextEditingController controller, List<String> values) =>
+      Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: values
+              .map(
+                (value) => ActionChip(
+                  label: Text(value, style: const TextStyle(fontSize: 11)),
+                  onPressed: () => setState(() => controller.text = value),
+                ),
+              )
+              .toList(),
+        ),
+      );
+
+  InputDecoration _decoration({String? hint}) => InputDecoration(
+    hintText: hint,
+    hintStyle: const TextStyle(
+      fontSize: 12,
+      color: Color(0xFF7C8798),
+      fontWeight: FontWeight.w600,
+    ),
+    filled: true,
+    fillColor: const Color(0xFFF8FAFC),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: const BorderSide(color: Color(0xFF2563EB)),
+    ),
+  );
+
+  Widget _footer() => LayoutBuilder(
+    builder: (context, constraints) {
+      final compact = constraints.maxWidth < 430;
+      return Container(
+        padding: const EdgeInsets.fromLTRB(18, 12, 18, 14),
+        decoration: const BoxDecoration(
+          color: Color(0xFFF8FAFC),
+          border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
+        ),
+        child: Row(
+          children: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                'Batal',
+                style: TextStyle(
+                  color: Color(0xFF64748B),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const Spacer(),
+            if (_step > 1)
+              compact
+                  ? IconButton(
+                      tooltip: 'Sebelumnya',
+                      onPressed: () => setState(() => _step--),
+                      icon: const Icon(Icons.arrow_back, size: 18),
+                    )
+                  : OutlinedButton.icon(
+                      onPressed: () => setState(() => _step--),
+                      icon: const Icon(Icons.arrow_back, size: 16),
+                      label: const Text('Sebelumnya'),
+                    ),
+            if (_step > 1) SizedBox(width: compact ? 2 : 10),
+            ElevatedButton.icon(
+              onPressed: _step == 3 ? _submit : _next,
+              icon: Icon(
+                _step == 3 ? Icons.send_rounded : Icons.arrow_forward,
+                size: 17,
+              ),
+              label: Text(
+                compact
+                    ? (_step == 3 ? 'Kirim' : 'Lanjut')
+                    : (_step == 3 ? 'Kirim Laporan' : 'Selanjutnya'),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2563EB),
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(
+                  horizontal: compact ? 12 : 18,
+                  vertical: 13,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
 }

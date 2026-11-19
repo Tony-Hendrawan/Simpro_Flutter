@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../data/models/progress_report_model.dart';
 import '../../domain/entities/progress_report_entity.dart';
+import '../../../projects/data/models/project_model.dart';
+import '../../../../core/widgets/summary_widgets.dart';
+import 'progress_history_page.dart';
 
 class ProgressReportPage extends StatefulWidget {
   const ProgressReportPage({super.key});
@@ -12,37 +15,43 @@ class ProgressReportPage extends StatefulWidget {
 }
 
 class _ProgressReportPageState extends State<ProgressReportPage> {
-  final List<ProgressReportEntity> _reports = List.from(ProgressReportModel.mockReports);
+  final List<ProgressReportEntity> _reports = List.from(
+    ProgressReportModel.mockReports,
+  );
 
   String _selectedProject = 'Pembangunan Gedung Kantor PT Maju Jaya';
-  final _addProgressController = TextEditingController(text: '3.0');
+  double _progressValue = 54;
   final _descController = TextEditingController();
 
-  final List<String> _projectOptions = const [
-    'Pembangunan Gedung Kantor PT Maju Jaya',
-    'Renovasi Hotel Bintang Lima Nusantara',
-    'Pembangunan Jembatan Sungai Ciliwung',
-    'Perumahan Green Valley Residence',
-    'Pembangunan Gudang Logistik Cikupa',
-    'Pembangunan Masjid Al-Ikhlas',
-  ];
+  List<ProjectModel> get _projectOptions => ProjectModel.mockProjects;
+
+  double get _selectedProjectProgress => _projectOptions
+      .firstWhere(
+        (project) => project.name == _selectedProject,
+        orElse: () => _projectOptions.first,
+      )
+      .progress;
 
   void _submitProgress() {
-    final addVal = double.tryParse(_addProgressController.text.trim()) ?? 0.0;
-    if (addVal <= 0 || _descController.text.trim().isEmpty) {
+    final addVal = _progressValue - _selectedProjectProgress;
+    if (_descController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Harap masukkan progres penambahan dan deskripsi pekerjaan.'),
+          content: Text(
+            'Harap masukkan progres penambahan dan deskripsi pekerjaan.',
+          ),
           behavior: SnackBarBehavior.floating,
         ),
       );
       return;
     }
 
-    if (45.0 + addVal > 100.0) {
+    if (_progressValue < _selectedProjectProgress || _progressValue > 100.0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Persentase progres pekerjaan tidak boleh melebihi 100%.'),
+          content: Text(
+            'Persentase progres pekerjaan tidak boleh melebihi 100%.',
+          ),
           behavior: SnackBarBehavior.floating,
           backgroundColor: Color(0xFFE11D48),
         ),
@@ -56,7 +65,7 @@ class _ProgressReportPageState extends State<ProgressReportPage> {
         ProgressReportEntity(
           id: DateTime.now().millisecondsSinceEpoch,
           projectName: _selectedProject,
-          currentProgress: 45.0 + addVal,
+          currentProgress: _progressValue,
           addedProgress: addVal,
           reportDate: 'Hari ini',
           reporter: 'Pengawas Lapangan',
@@ -64,13 +73,98 @@ class _ProgressReportPageState extends State<ProgressReportPage> {
         ),
       );
       _descController.clear();
-      _addProgressController.text = '3.0';
+      _progressValue = _selectedProjectProgress;
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Laporan perkembangan proyek berhasil dicatat!'),
         behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  // ignore: unused_element
+  Widget _projectProgressCard(ProjectModel project) {
+    final isComplete = project.progress >= 100;
+    final progressColor = isComplete
+        ? const Color(0xFF059669)
+        : const Color(0xFF2563EB);
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(9),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  project.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: Color(0xFF1E293B),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                decoration: BoxDecoration(
+                  color: isComplete
+                      ? const Color(0xFFECFDF5)
+                      : const Color(0xFFEFF6FF),
+                  border: Border.all(
+                    color: isComplete
+                        ? const Color(0xFFA7F3D0)
+                        : const Color(0xFFBFDBFE),
+                  ),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  '${project.progress.toInt()}%',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: progressColor,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                project.code,
+                style: const TextStyle(fontSize: 9, color: Color(0xFF94A3B8)),
+              ),
+              Text(
+                project.clientName,
+                style: const TextStyle(fontSize: 9, color: Color(0xFF94A3B8)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: project.progress / 100,
+              minHeight: 5,
+              backgroundColor: const Color(0xFFE2E8F0),
+              valueColor: AlwaysStoppedAnimation<Color>(progressColor),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -84,12 +178,20 @@ class _ProgressReportPageState extends State<ProgressReportPage> {
         elevation: 0,
         surfaceTintColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF0F172A), size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Color(0xFF0F172A),
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Laporan Pengerjaan Proyek',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF0F172A),
+          ),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
@@ -123,83 +225,171 @@ class _ProgressReportPageState extends State<ProgressReportPage> {
                             color: const Color(0xFFEFF6FF),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Icon(Icons.edit_calendar_rounded, color: Color(0xFF1D4ED8), size: 20),
+                          child: const Icon(
+                            Icons.edit_calendar_rounded,
+                            color: Color(0xFF1D4ED8),
+                            size: 20,
+                          ),
                         ),
                         const SizedBox(width: 10),
                         const Text(
                           'Input Laporan Perkembangan Proyek',
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF0F172A),
+                          ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 14),
-                    const Text('Pilih Proyek', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
-                    const SizedBox(height: 6),
-                    DropdownButtonFormField<String>(
-                      initialValue: _selectedProject,
-                      isExpanded: true,
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                    const Text(
+                      'Pilih Proyek',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF475569),
                       ),
-                      items: _projectOptions.map((p) {
-                        return DropdownMenuItem(
-                          value: p,
-                          child: Text(p, style: const TextStyle(fontSize: 12), overflow: TextOverflow.ellipsis),
-                        );
-                      }).toList(),
-                      onChanged: (val) {
-                        if (val != null) setState(() => _selectedProject = val);
+                    ),
+                    const SizedBox(height: 6),
+                    AppFilterDropdown<String>(
+                      value: _selectedProject,
+                      entries: _projectOptions
+                          .map(
+                            (project) => DropdownMenuEntry(
+                              value: project.name,
+                              label: project.name,
+                            ),
+                          )
+                          .toList(),
+                      onSelected: (val) {
+                        if (val != null) {
+                          setState(() {
+                            _selectedProject = val;
+                            _progressValue = _selectedProjectProgress;
+                          });
+                        }
                       },
                     ),
                     const SizedBox(height: 12),
-                    const Text('Penambahan Progres (%)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Persentase Capaian Pengerjaan (%)',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF475569),
+                          ),
+                        ),
+                        Text(
+                          '${_progressValue.toInt()}%',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1D4ED8),
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 6),
-                    TextField(
-                      controller: _addProgressController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      decoration: InputDecoration(
-                        suffixText: '%',
-                        hintText: 'Contoh: 3.5',
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                      ),
+                    Slider(
+                      value: _progressValue,
+                      min: 0,
+                      max: 100,
+                      divisions: 100,
+                      activeColor: const Color(0xFF2563EB),
+                      inactiveColor: const Color(0xFFE2E8F0),
+                      onChanged: (value) =>
+                          setState(() => _progressValue = value),
+                    ),
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '0% (Capaian Saat Ini)',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Color(0xFF94A3B8),
+                          ),
+                        ),
+                        Text(
+                          '100% (Selesai)',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Color(0xFF94A3B8),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 12),
-                    const Text('Uraian Capaian Pekerjaan & Kendala Lapangan', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
+                    const Text(
+                      'Catatan Pekerjaan & Kendala Lapangan',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF475569),
+                      ),
+                    ),
                     const SizedBox(height: 6),
                     TextField(
                       controller: _descController,
                       maxLines: 2,
                       decoration: InputDecoration(
-                        hintText: 'Uraikan rincian pekerjaan atau kendala cuaca/teknis...',
-                        hintStyle: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                        hintText:
+                            'Deskripsikan item pekerjaan yang telah diselesaikan atau kendala teknis/cuaca di lapangan...',
+                        hintStyle: const TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF94A3B8),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 10,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 12),
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 18,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFF8FAFC),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xFFE2E8F0)),
+                        border: Border.all(
+                          color: const Color(0xFFBFDBFE),
+                          style: BorderStyle.solid,
+                        ),
                       ),
-                      child: Row(
-                        children: const [
-                          Icon(Icons.add_photo_alternate_outlined, size: 20, color: Color(0xFF1D4ED8)),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Dokumentasi Foto Lapangan', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
-                                Text('Maksimal 5 foto &bull; JPG, PNG, WEBP', style: TextStyle(fontSize: 10, color: Color(0xFF64748B))),
-                              ],
+                      child: const Column(
+                        children: [
+                          Icon(
+                            Icons.cloud_upload_outlined,
+                            size: 24,
+                            color: Color(0xFF2563EB),
+                          ),
+                          SizedBox(height: 6),
+                          Text(
+                            'Klik untuk memilih atau seret berkas ke sini',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Color(0xFF475569),
                             ),
                           ),
-                          Text('2 Terpilih', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF059669))),
+                          SizedBox(height: 3),
+                          Text(
+                            'Format: JPG, PNG, WEBP • Maksimal 5 foto',
+                            style: TextStyle(
+                              fontSize: 9,
+                              color: Color(0xFF94A3B8),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -212,82 +402,30 @@ class _ProgressReportPageState extends State<ProgressReportPage> {
                           backgroundColor: const Color(0xFF1D4ED8),
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
-                        child: const Text('KIRIM LAPORAN PROGRES', style: TextStyle(fontWeight: FontWeight.bold)),
+                        child: const Text(
+                          'SIMPAN LAPORAN PENGERJAAN',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
-
-              const Text(
-                'Riwayat Pembaruan Progres Lapangan',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
-              ),
-              const SizedBox(height: 10),
-
-              ListView.separated(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: _reports.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 10),
-                itemBuilder: (context, index) {
-                  final r = _reports[index];
-                  return Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                r.projectName,
-                                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 2,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFECFDF5),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                '+${r.addedProgress}%',
-                                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF059669)),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          r.description,
-                          style: const TextStyle(fontSize: 12, color: Color(0xFF334155), height: 1.4),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Pelapor: ${r.reporter}', style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8))),
-                            Text(r.reportDate, style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8))),
-                          ],
-                        ),
-                      ],
-                    ),
-                  );
-                },
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () => Navigator.pushNamed(
+                    context,
+                    ProgressHistoryPage.routeName,
+                  ),
+                  icon: const Icon(Icons.history, size: 18),
+                  label: const Text('Lihat Ringkasan & Riwayat Progres'),
+                ),
               ),
             ],
           ),

@@ -10,6 +10,9 @@ class ProjectEntity {
   final double progress;
   final String status; // 'aktif', 'perencanaan', 'selesai', 'tertunda'
   final String manager;
+  final String? description;
+  final String? startDate;
+  final String? endDate;
   final int completedDocsCount;
 
   const ProjectEntity({
@@ -24,6 +27,9 @@ class ProjectEntity {
     required this.progress,
     required this.status,
     required this.manager,
+    this.description,
+    this.startDate,
+    this.endDate,
     this.completedDocsCount = 4,
   });
 }

@@ -29,22 +29,6 @@ class UserAccountModel extends UserAccountEntity {
     ),
     UserAccountModel(
       id: 3,
-      name: 'Siti Rahmawati, S.E.',
-      username: 'administrasi',
-      role: 'administrasi',
-      email: 'admin.operasional@arthamasgraha.com',
-      status: 'aktif',
-    ),
-    UserAccountModel(
-      id: 4,
-      name: 'Ir. Budi Santoso',
-      username: 'konsultan',
-      role: 'konsultan',
-      email: 'konsultan.teknik@arthamasgraha.com',
-      status: 'aktif',
-    ),
-    UserAccountModel(
-      id: 5,
       name: 'Andi Wijaya, ST',
       username: 'pengawas',
       role: 'pengawas',
@@ -52,7 +36,7 @@ class UserAccountModel extends UserAccountEntity {
       status: 'aktif',
     ),
     UserAccountModel(
-      id: 6,
+      id: 4,
       name: 'Agus Setiawan',
       username: 'logistik',
       role: 'logistik',
@@ -60,7 +44,7 @@ class UserAccountModel extends UserAccountEntity {
       status: 'aktif',
     ),
     UserAccountModel(
-      id: 7,
+      id: 5,
       name: 'Ratna Sari, SE',
       username: 'keuangan',
       role: 'keuangan',

@@ -2,7 +2,8 @@ class UserAccountEntity {
   final int id;
   final String name;
   final String username;
-  final String role; // 'owner', 'admin', 'administrasi', 'konsultan', 'pengawas', 'logistik', 'marketing', 'keuangan'
+  final String
+  role; // 'owner', 'admin', 'logistik', 'keuangan', 'pelaksana', 'pengawas'
   final String email;
   final String status; // 'aktif', 'nonaktif'
 
