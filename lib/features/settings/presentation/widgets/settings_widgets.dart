@@ -180,10 +180,10 @@ class RelatedModulesCard extends StatelessWidget {
         children: [
           const Row(
             children: [
-              Icon(Icons.link_rounded, color: Color(0xFF0F172A), size: 20),
+              Icon(Icons.hub_outlined, color: Color(0xFF0F172A), size: 20),
               SizedBox(width: 12),
               Text(
-                'Pengaturan Modul Terkait',
+                'Integrasi Data & Hak Akses',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
