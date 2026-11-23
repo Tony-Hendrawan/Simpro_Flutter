@@ -74,7 +74,7 @@ class _DashboardPageState extends State<DashboardPage> {
   // ── Tab titles ──
   static const List<String> _tabTitles = [
     'Dashboard',
-    'Statistik',
+    'Ringkasan',
     'Profile',
   ];
 

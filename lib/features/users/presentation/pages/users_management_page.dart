@@ -981,24 +981,10 @@ class _UsersManagementPageState extends State<UsersManagementPage> {
           child: Container(color: const Color(0xFFE2E8F0), height: 1),
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 10),
-            child: ElevatedButton.icon(
-              onPressed: _showAddModal,
-              icon: const Icon(Icons.person_add_rounded, size: 16),
-              label: const Text('Tambah',
-                  style:
-                      TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF1D4ED8),
-                foregroundColor: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
-                elevation: 0,
-              ),
-            ),
+          IconButton(
+            icon: const Icon(Icons.person_add_rounded, color: Color(0xFF1D4ED8)),
+            tooltip: 'Tambah Pengguna',
+            onPressed: _showAddModal,
           ),
         ],
       ),

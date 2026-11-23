@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // ── Bottom Navigation Bar ──
-// 3 menu utama: Dashboard, Statistik, Profile
+// 3 menu utama: Dashboard, Ringkasan, Profile
 class DashboardBottomNavBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
@@ -14,7 +14,7 @@ class DashboardBottomNavBar extends StatelessWidget {
 
   static const _navItems = [
     _NavItem(title: 'Dashboard', icon: Icons.dashboard_rounded),
-    _NavItem(title: 'Statistik', icon: Icons.bar_chart_rounded),
+    _NavItem(title: 'Ringkasan', icon: Icons.insights_rounded),
     _NavItem(title: 'Profile', icon: Icons.person_rounded),
   ];
 
